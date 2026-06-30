@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robinson House Learn — Sign In</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Fraunces:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --charcoal: #1C1C1E;
+    --amber: #E8A020;
+    --amber-light: #FDF3E0;
+    --amber-dark: #C8851A;
+    --blue: #0066F5;
+    --blue-light: #EAF1FF;
+    --blue-dark: #0050C2;
+    --teal: #0F9E76;
+    --teal-light: #E1F8F0;
+    --body: #3D3D3A;
+    --muted: #8A8A85;
+    --border: #E8E8E4;
+    --white: #FFFFFF;
+    --red: #C0392B;
+  }
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--body);
+    min-height: 100vh;
+    display: flex;
+    line-height: 1.6;
+    background: var(--white);
+  }
+
+  /* LEFT PANEL - light blue brand side, Coursera style */
+  .brand-side {
+    flex: 1;
+    background: var(--blue-light);
+    position: relative;
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 3rem;
+    overflow: hidden;
+    min-height: 100vh;
+  }
+  @media (min-width: 900px) { .brand-side { display: flex; } }
+
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+  }
+  .blob-blue {
+    width: 320px; height: 320px;
+    background: var(--blue);
+    opacity: 0.12;
+    top: -80px; right: -100px;
+  }
+  .blob-amber {
+    width: 220px; height: 220px;
+    background: var(--amber);
+    opacity: 0.18;
+    bottom: 60px; left: -60px;
+  }
+  .blob-teal {
+    width: 160px; height: 160px;
+    background: var(--teal);
+    opacity: 0.15;
+    bottom: 320px; right: 40px;
+  }
+
+  .brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    z-index: 2;
+  }
+  .logo-mark {
+    width: 42px; height: 42px;
+    background: var(--blue);
+    border-radius: 11px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 700; font-size: 18px;
+  }
+  .brand-logo-name { font-size: 17px; font-weight: 700; color: var(--charcoal); display: block; }
+  .brand-logo-sub { font-size: 12px; color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; display: block; }
+
+  .brand-message { position: relative; z-index: 2; }
+  .brand-message h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 38px;
+    font-weight: 600;
+    color: var(--charcoal);
+    line-height: 1.2;
+    margin-bottom: 1rem;
+  }
+  .brand-message h1 em { font-style: italic; color: var(--blue); }
+  .brand-message p {
+    font-size: 16px;
+    color: var(--body);
+    max-width: 380px;
+    line-height: 1.7;
+  }
+
+  .brand-stats { display: flex; gap: 28px; position: relative; z-index: 2; }
+  .brand-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--amber-light);
+    color: var(--amber-dark);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 6px 14px;
+    border-radius: 40px;
+    margin-bottom: 1.25rem;
+  }
+  .brand-eyebrow::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--amber);
+    border-radius: 50%;
+  }
+  .brand-stat-num {
+    font-family: 'Fraunces', serif;
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1;
+  }
+  .brand-stat-num.blue-num { color: var(--blue); }
+  .brand-stat-num.amber-num { color: var(--amber-dark); }
+  .brand-stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* RIGHT PANEL - form, white background */
+  .form-side {
+    flex: 1;
+    background: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.25rem;
+    min-height: 100vh;
+  }
+
+  .wrap { width: 100%; max-width: 420px; }
+
+  .mobile-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 1.75rem;
+  }
+  @media (min-width: 900px) { .mobile-logo { display: none; } }
+  .mobile-logo .logo-mark { background: var(--blue); }
+  .mobile-logo-name { font-size: 15px; font-weight: 700; color: var(--charcoal); display: block; }
+  .mobile-logo-sub { font-size: 11px; color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; display: block; }
+
+  .card {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    padding: 2.25rem;
+  }
+
+  h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--charcoal);
+    margin-bottom: 6px;
+    text-align: center;
+  }
+  .sub { font-size: 14px; color: var(--muted); text-align: center; margin-bottom: 1.75rem; }
+
+  .mobile-eyebrow {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    background: var(--amber-light);
+    color: var(--amber-dark);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 6px 14px;
+    border-radius: 40px;
+    margin: 0 auto 1.25rem;
+    width: fit-content;
+  }
+  .mobile-eyebrow::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--amber);
+    border-radius: 50%;
+  }
+  @media (max-width: 899px) { .mobile-eyebrow { display: flex; } }
+
+  .tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: #F4F7FC;
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 1.75rem;
+  }
+  .tab {
+    text-align: center;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+    border-radius: 9px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    background: transparent;
+  }
+  .tab.active {
+    background: var(--blue);
+    color: white;
+    box-shadow: 0 2px 8px rgba(0,102,245,0.25);
+  }
+
+  .field { margin-bottom: 1.1rem; }
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--charcoal);
+    margin-bottom: 6px;
+  }
+  .field input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--charcoal);
+    transition: border-color 0.15s, background 0.15s;
+    background: #FAFAF9;
+  }
+  .field input:focus {
+    outline: none;
+    border-color: var(--blue);
+    background: white;
+  }
+  .field-hint { font-size: 12px; color: var(--muted); margin-top: 5px; }
+
+  .access-path { display: none; }
+  .access-path.show { display: block; }
+  .individual-path { display: block; }
+  .individual-path.hide { display: none; }
+
+  .path-selector { display: flex; gap: 8px; margin-bottom: 1.25rem; }
+  .path-btn {
+    flex: 1;
+    padding: 12px 8px;
+    border-radius: 10px;
+    border: 2px solid var(--border);
+    background: white;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--body);
+    cursor: pointer;
+    transition: all 0.18s;
+    text-align: center;
+  }
+  .path-btn.path-individual-active {
+    border-color: var(--teal);
+    background: var(--teal-light);
+    color: var(--teal);
+  }
+  .path-btn.path-cohort-active {
+    border-color: var(--amber);
+    background: var(--amber-light);
+    color: var(--amber-dark);
+  }
+
+  .btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    border: none;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+  .btn-primary {
+    background: var(--blue);
+    color: white;
+    box-shadow: 0 4px 14px rgba(0,102,245,0.3);
+  }
+  .btn-primary:hover { background: var(--blue-dark); transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,102,245,0.35); }
+  .btn-primary:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; box-shadow: none; transform: none; }
+
+  .msg {
+    font-size: 13px;
+    font-weight: 500;
+    padding: 11px 14px;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    display: none;
+  }
+  .msg.show { display: block; }
+  .msg.error { background: #FBEAEA; color: var(--red); border: 1.5px solid #F3CACA; }
+  .msg.success { background: var(--teal-light); color: var(--teal); border: 1.5px solid #BEEEDA; }
+
+  .footer-note { text-align: center; font-size: 13px; color: var(--muted); margin-top: 1.5rem; }
+  .footer-note a { color: var(--blue); text-decoration: none; font-weight: 600; }
+  .footer-note a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<div class="brand-side">
+  <div class="blob blob-blue"></div>
+  <div class="blob blob-amber"></div>
+  <div class="blob blob-teal"></div>
+
+  <div class="brand-logo">
+    <div class="logo-mark">R</div>
+    <div>
+      <span class="brand-logo-name">Robinson House Learn</span>
+      <span class="brand-logo-sub">AI Education for Today and Tomorrow</span>
+    </div>
+  </div>
+
+  <div class="brand-message">
+    <div class="brand-eyebrow">AI Education for Today and Tomorrow</div>
+    <h1>AI skills for the workforce that exists today — <em>and tomorrow.</em></h1>
+    <p>Practical, professional-grade AI training for career changers, clinicians, and organizations. Learn at your own pace, built by someone who has actually built AI products.</p>
+  </div>
+
+  <div class="brand-stats">
+    <div>
+      <div class="brand-stat-num amber-num">2</div>
+      <div class="brand-stat-label">AI products built<br>by the instructor</div>
+    </div>
+    <div>
+      <div class="brand-stat-num blue-num">5</div>
+      <div class="brand-stat-label">States with active<br>clinical licensure</div>
+    </div>
+    <div>
+      <div class="brand-stat-num amber-num">13</div>
+      <div class="brand-stat-label">Modules across<br>both programs</div>
+    </div>
+  </div>
+</div>
+
+<div class="form-side">
+  <div class="wrap">
+
+    <div class="mobile-logo">
+      <div class="logo-mark">R</div>
+      <div>
+        <span class="mobile-logo-name">Robinson House Learn</span>
+        <span class="mobile-logo-sub">AI Education for Today and Tomorrow</span>
+      </div>
+    </div>
+
+    <div class="mobile-eyebrow">AI Education for Today and Tomorrow</div>
+
+    <div class="card">
+      <h2>Welcome back</h2>
+      <p class="sub">Sign in or create an account to access your courses</p>
+
+      <div class="tabs">
+        <button class="tab active" id="tab-signin" onclick="switchTab('signin')">Sign in</button>
+        <button class="tab" id="tab-signup" onclick="switchTab('signup')">Create account</button>
+      </div>
+
+      <div id="msg" class="msg"></div>
+
+      <form id="signin-form" onsubmit="handleSignIn(event)">
+        <div class="field">
+          <label for="signin-email">Email</label>
+          <input type="email" id="signin-email" placeholder="name@company.com" required>
+        </div>
+        <div class="field">
+          <label for="signin-password">Password</label>
+          <input type="password" id="signin-password" placeholder="Enter your password" required>
+        </div>
+        <button type="submit" class="btn btn-primary" id="signin-btn">Sign in</button>
+      </form>
+
+      <form id="signup-form" onsubmit="handleSignUp(event)" style="display:none;">
+
+        <div class="path-selector">
+          <button type="button" class="path-btn path-individual-active" id="path-individual" onclick="selectPath('individual')">I'm enrolling myself</button>
+          <button type="button" class="path-btn" id="path-cohort" onclick="selectPath('cohort')">I have an access code</button>
+        </div>
+
+        <div class="field">
+          <label for="signup-name">Full name</label>
+          <input type="text" id="signup-name" placeholder="Your full name" required>
+        </div>
+
+        <div class="field">
+          <label for="signup-email">Email</label>
+          <input type="email" id="signup-email" placeholder="name@company.com" required>
+        </div>
+
+        <div class="field">
+          <label for="signup-password">Password</label>
+          <input type="password" id="signup-password" placeholder="At least 8 characters" minlength="8" required>
+        </div>
+
+        <div class="field access-path" id="cohort-field">
+          <label for="signup-code">Access code</label>
+          <input type="text" id="signup-code" placeholder="e.g. TXWIOA2026" style="text-transform: uppercase;">
+          <div class="field-hint">Provided by your state agency, employer, or organization.</div>
+        </div>
+
+        <div class="field individual-path" id="org-field">
+          <label for="signup-org">Organization <span style="font-weight:400; color:var(--muted);">(optional)</span></label>
+          <input type="text" id="signup-org" placeholder="Company or organization name">
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="signup-btn">Create account</button>
+      </form>
+
+      <div class="footer-note" id="footer-note">
+        Don't have an account? <a href="#" onclick="switchTab('signup'); return false;">Create one</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const SUPABASE_URL = 'https://hinsbtiahzgccnjyovvc.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhpbnNidGlhaHpnY2NuanlvdnZjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MjM0MjQsImV4cCI6MjA5ODM5OTQyNH0.aza9Xin6Qa3qAncGVl3P1TLGstKpA83Bqs8DywBoGyw';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  let currentPath = 'individual';
+
+  function switchTab(tab) {
+    document.getElementById('tab-signin').classList.toggle('active', tab === 'signin');
+    document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+    document.getElementById('signin-form').style.display = tab === 'signin' ? 'block' : 'none';
+    document.getElementById('signup-form').style.display = tab === 'signup' ? 'block' : 'none';
+    document.getElementById('footer-note').innerHTML = tab === 'signin'
+      ? `Don't have an account? <a href="#" onclick="switchTab('signup'); return false;">Create one</a>`
+      : `Already have an account? <a href="#" onclick="switchTab('signin'); return false;">Sign in</a>`;
+    hideMsg();
+  }
+
+  function selectPath(path) {
+    currentPath = path;
+    document.getElementById('path-individual').classList.toggle('path-individual-active', path === 'individual');
+    document.getElementById('path-cohort').classList.toggle('path-cohort-active', path === 'cohort');
+    document.getElementById('cohort-field').classList.toggle('show', path === 'cohort');
+    document.getElementById('org-field').classList.toggle('hide', path === 'cohort');
+    document.getElementById('signup-code').required = (path === 'cohort');
+  }
+
+  function showMsg(text, type) {
+    const el = document.getElementById('msg');
+    el.textContent = text;
+    el.className = 'msg show ' + type;
+  }
+  function hideMsg() {
+    document.getElementById('msg').className = 'msg';
+  }
+
+  async function handleSignIn(e) {
+    e.preventDefault();
+    hideMsg();
+    const btn = document.getElementById('signin-btn');
+    btn.disabled = true;
+    btn.textContent = 'Signing in...';
+
+    const email = document.getElementById('signin-email').value;
+    const password = document.getElementById('signin-password').value;
+
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+
+    btn.disabled = false;
+    btn.textContent = 'Sign in';
+
+    if (error) {
+      showMsg(error.message, 'error');
+      return;
+    }
+
+    window.location.href = '/dashboard.html';
+  }
+
+  async function handleSignUp(e) {
+    e.preventDefault();
+    hideMsg();
+    const btn = document.getElementById('signup-btn');
+    btn.disabled = true;
+    btn.textContent = 'Creating account...';
+
+    const fullName = document.getElementById('signup-name').value;
+    const email = document.getElementById('signup-email').value;
+    const password = document.getElementById('signup-password').value;
+    const org = document.getElementById('signup-org').value;
+    const code = document.getElementById('signup-code').value.trim().toUpperCase();
+
+    let cohort = null;
+
+    if (currentPath === 'cohort') {
+      if (!code) {
+        showMsg('Please enter your access code.', 'error');
+        btn.disabled = false;
+        btn.textContent = 'Create account';
+        return;
+      }
+      const { data: cohortData, error: cohortError } = await sb
+        .from('cohorts')
+        .select('*')
+        .eq('access_code', code)
+        .single();
+
+      if (cohortError || !cohortData) {
+        showMsg('That access code was not recognized. Please check with your organization.', 'error');
+        btn.disabled = false;
+        btn.textContent = 'Create account';
+        return;
+      }
+
+      if (cohortData.max_seats && cohortData.seats_used >= cohortData.max_seats) {
+        showMsg('This cohort has reached its enrollment limit. Please contact your organization.', 'error');
+        btn.disabled = false;
+        btn.textContent = 'Create account';
+        return;
+      }
+
+      cohort = cohortData;
+    }
+
+    const { data: authData, error: authError } = await sb.auth.signUp({ email, password });
+
+    if (authError) {
+      showMsg(authError.message, 'error');
+      btn.disabled = false;
+      btn.textContent = 'Create account';
+      return;
+    }
+
+    const { data: learnerData, error: learnerError } = await sb
+      .from('learners')
+      .insert({
+        auth_user_id: authData.user.id,
+        email: email,
+        full_name: fullName,
+        organization_name: cohort ? cohort.organization_name : (org || null)
+      })
+      .select()
+      .single();
+
+    if (learnerError) {
+      showMsg('Account created, but there was an issue setting up your profile. Please contact support.', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Create account';
+      return;
+    }
+
+    if (cohort) {
+      await sb.from('enrollments').insert({
+        learner_id: learnerData.id,
+        course_id: cohort.course_id,
+        cohort_id: cohort.id,
+        enrollment_type: 'cohort'
+      });
+
+      await sb.from('cohorts').update({
+        seats_used: cohort.seats_used + 1
+      }).eq('id', cohort.id);
+
+      showMsg('Account created! You have been enrolled in ' + (cohort.name || 'your course') + '.', 'success');
+      setTimeout(() => { window.location.href = '/dashboard.html'; }, 1500);
+      return;
+    }
+
+    showMsg('Account created! Redirecting to your dashboard...', 'success');
+    setTimeout(() => { window.location.href = '/dashboard.html'; }, 1500);
+  }
+</script>
+
+</body>
+</html>
