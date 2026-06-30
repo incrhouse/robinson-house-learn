@@ -13,7 +13,9 @@
     --amber: #E8A020;
     --amber-light: #FDF3E0;
     --amber-dark: #C8851A;
-    --navy: #1A3A5C;
+    --navy: #0066F5;
+    --navy-deep: #0050C2;
+    --blue-light: #EAF1FF;
     --body: #3D3D3A;
     --muted: #8A8A85;
     --soft-gray: #F5F5F3;
@@ -117,10 +119,10 @@
 
   .btn-outline {
     background: transparent;
-    color: var(--charcoal);
-    border: 1.5px solid var(--charcoal);
+    color: var(--navy);
+    border: 1.5px solid var(--navy);
   }
-  .btn-outline:hover { background: var(--charcoal); color: white; }
+  .btn-outline:hover { background: var(--navy); color: white; }
 
   .btn-white {
     background: white;
@@ -132,7 +134,18 @@
   .btn-lg { padding: 14px 28px; font-size: 15px; border-radius: 10px; }
 
   /* HERO */
-  .hero-wrap { padding: 80px 2rem 70px; background: var(--white); }
+  .hero-wrap { padding: 80px 2rem 70px; background: var(--white); position: relative; overflow: hidden; }
+  .hero-blob-blue {
+    position: absolute; top: -120px; right: -100px;
+    width: 380px; height: 380px; border-radius: 50%;
+    background: var(--navy); opacity: 0.06; z-index: 0;
+  }
+  .hero-blob-amber {
+    position: absolute; bottom: -80px; left: -60px;
+    width: 220px; height: 220px; border-radius: 50%;
+    background: var(--amber); opacity: 0.10; z-index: 0;
+  }
+  .hero { position: relative; z-index: 1; }
   .hero {
     max-width: 1200px;
     margin: 0 auto;
@@ -216,8 +229,17 @@
     position: absolute;
     top: -40px; right: -40px;
     width: 160px; height: 160px;
+    background: var(--navy);
+    opacity: 0.15;
+    border-radius: 50%;
+  }
+  .hero-card::after {
+    content: '';
+    position: absolute;
+    bottom: -50px; left: -50px;
+    width: 140px; height: 140px;
     background: var(--amber);
-    opacity: 0.08;
+    opacity: 0.10;
     border-radius: 50%;
   }
 
@@ -288,10 +310,11 @@
     font-family: 'Fraunces', serif;
     font-size: 48px;
     font-weight: 600;
-    color: var(--amber);
     line-height: 1;
     margin-bottom: 6px;
   }
+  .stat-num.amber-num { color: var(--amber-dark); }
+  .stat-num.blue-num { color: var(--navy); }
 
   .stat-label { font-size: 14px; color: var(--muted); }
 
@@ -355,7 +378,7 @@
   }
 
   .badge-amber { background: var(--amber-light); color: var(--amber-dark); }
-  .badge-navy { background: #e8f0f8; color: var(--navy); }
+  .badge-navy { background: var(--blue-light); color: var(--navy); }
   .badge-gray { background: var(--soft-gray); color: var(--muted); }
 
   .program-card h3 {
@@ -739,6 +762,15 @@
 </style>
 </head>
 <body>
+<script>
+  // Supabase's free-tier email confirmation links sometimes land here on
+  // the homepage instead of confirm.html. This catches that case and
+  // forwards the user along with their session so account setup finishes.
+  if (window.location.hash && window.location.hash.includes('access_token')) {
+    window.location.replace('/confirm.html' + window.location.hash);
+  }
+</script>
+
 
 <!-- NAV -->
 <nav>
@@ -760,6 +792,8 @@
 
 <!-- HERO -->
 <div class="hero-wrap">
+  <div class="hero-blob-blue"></div>
+  <div class="hero-blob-amber"></div>
   <div class="hero">
     <div>
       <div class="eyebrow fade-up">
@@ -814,15 +848,15 @@
 <div class="stat-bar">
   <div class="stat-bar-inner">
     <div class="stat-item">
-      <div class="stat-num">2</div>
+      <div class="stat-num amber-num">2</div>
       <div class="stat-label">AI products built by the instructor</div>
     </div>
     <div class="stat-item">
-      <div class="stat-num">5</div>
+      <div class="stat-num blue-num">5</div>
       <div class="stat-label">States with active clinical licensure</div>
     </div>
     <div class="stat-item">
-      <div class="stat-num">$800M+</div>
+      <div class="stat-num amber-num">$800M+</div>
       <div class="stat-label">Federal AI education funding available in 2026</div>
     </div>
   </div>
