@@ -102,6 +102,11 @@
     <h1>Confirming your account...</h1>
     <p>Just a moment while we finish setting things up.</p>
   </div>
+  <p id="stuck-help" style="display:none; margin-top:1.25rem;">
+    Taking longer than expected?
+    <a href="/login.html" style="color:var(--blue); font-weight:600;">Try signing in</a>
+    or contact <a href="mailto:cleveland@incrhouse.com" style="color:var(--blue); font-weight:600;">support</a>.
+  </p>
 </div>
 
 <script>
@@ -126,11 +131,43 @@
   }
 
   async function finishSetup() {
-    // Supabase places the session in the URL hash after email confirmation.
-    // getSession() picks it up automatically once the client initializes.
-    const { data: { session }, error: sessionError } = await sb.auth.getSession();
+    // Supabase's JS client parses the access_token from the URL hash
+    // asynchronously on page load via the onAuthStateChange listener.
+    // Calling getSession() immediately can race ahead of that parsing,
+    // so we wait for either a SIGNED_IN/INITIAL_SESSION event or a
+    // short timeout as a fallback, instead of checking only once.
 
-    if (sessionError || !session || !session.user) {
+    const session = await new Promise((resolve) => {
+      let resolved = false;
+
+      const { data: listener } = sb.auth.onAuthStateChange((event, session) => {
+        if (!resolved && session) {
+          resolved = true;
+          listener.subscription.unsubscribe();
+          resolve(session);
+        }
+      });
+
+      // Fallback: also try a direct check in case the event already fired
+      sb.auth.getSession().then(({ data }) => {
+        if (!resolved && data.session) {
+          resolved = true;
+          listener.subscription.unsubscribe();
+          resolve(data.session);
+        }
+      });
+
+      // Final fallback timeout so we never hang forever
+      setTimeout(() => {
+        if (!resolved) {
+          resolved = true;
+          listener.subscription.unsubscribe();
+          resolve(null);
+        }
+      }, 6000);
+    });
+
+    if (!session || !session.user) {
       showError('We could not verify your confirmation link. It may have expired. Please try signing up again or contact support.');
       return;
     }
@@ -194,6 +231,11 @@
 
     showSuccess('Your account is ready. Head to your dashboard to choose a course.');
   }
+
+  setTimeout(() => {
+    const help = document.getElementById('stuck-help');
+    if (help) help.style.display = 'block';
+  }, 5000);
 
   finishSetup();
 </script>
