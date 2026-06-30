@@ -537,7 +537,21 @@
       cohort = cohortData;
     }
 
-    const { data: authData, error: authError } = await sb.auth.signUp({ email, password });
+    // Store pending enrollment info so we can finish setup after email confirmation
+    const pendingData = {
+      fullName: fullName,
+      org: org || null,
+      cohortId: cohort ? cohort.id : null
+    };
+
+    const { data: authData, error: authError } = await sb.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: window.location.origin + '/confirm.html',
+        data: pendingData
+      }
+    });
 
     if (authError) {
       showMsg(authError.message, 'error');
@@ -546,43 +560,16 @@
       return;
     }
 
-    const { data: learnerData, error: learnerError } = await sb
-      .from('learners')
-      .insert({
-        auth_user_id: authData.user.id,
-        email: email,
-        full_name: fullName,
-        organization_name: cohort ? cohort.organization_name : (org || null)
-      })
-      .select()
-      .single();
+    // Email confirmation is required, so there is no active session yet.
+    // We cannot write to learners/enrollments until the user confirms and
+    // logs in (RLS requires auth.uid()). Their name, org, and cohort info
+    // is stored in the auth user's metadata above and picked up by
+    // confirm.html right after they click the email link.
+    btn.textContent = 'Check your email';
 
-    if (learnerError) {
-      showMsg('Account created, but there was an issue setting up your profile. Please contact support.', 'error');
-      btn.disabled = false;
-      btn.textContent = 'Create account';
-      return;
-    }
-
-    if (cohort) {
-      await sb.from('enrollments').insert({
-        learner_id: learnerData.id,
-        course_id: cohort.course_id,
-        cohort_id: cohort.id,
-        enrollment_type: 'cohort'
-      });
-
-      await sb.from('cohorts').update({
-        seats_used: cohort.seats_used + 1
-      }).eq('id', cohort.id);
-
-      showMsg('Account created! You have been enrolled in ' + (cohort.name || 'your course') + '.', 'success');
-      setTimeout(() => { window.location.href = '/dashboard.html'; }, 1500);
-      return;
-    }
-
-    showMsg('Account created! Redirecting to your dashboard...', 'success');
-    setTimeout(() => { window.location.href = '/dashboard.html'; }, 1500);
+    document.getElementById('signup-form').style.display = 'none';
+    document.getElementById('footer-note').style.display = 'none';
+    showMsg('Almost there! We sent a confirmation link to ' + email + '. Click it to activate your account' + (cohort ? ' and finish enrolling in ' + (cohort.name || 'your course') + '.' : '.'), 'success');
   }
 </script>
 
