@@ -30,7 +30,7 @@
     padding: 2rem 1.25rem;
   }
   .card {
-    max-width: 420px;
+    max-width: 460px;
     width: 100%;
     text-align: center;
     border: 1.5px solid var(--border);
@@ -63,33 +63,44 @@
   }
   p { font-size: 14px; color: var(--muted); line-height: 1.6; }
   .icon-success {
-    width: 48px; height: 48px;
+    width: 56px; height: 56px;
     background: var(--teal-light);
     color: var(--teal);
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    font-size: 24px;
+    font-size: 28px;
     margin: 0 auto 1.25rem;
   }
   .icon-error {
-    width: 48px; height: 48px;
+    width: 56px; height: 56px;
     background: #FBEAEA;
     color: var(--red);
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    font-size: 24px;
+    font-size: 28px;
     margin: 0 auto 1.25rem;
   }
   .btn {
     display: inline-block;
     margin-top: 1.5rem;
-    padding: 12px 28px;
+    padding: 13px 32px;
     background: var(--blue);
     color: white;
     text-decoration: none;
     border-radius: 10px;
     font-size: 14px;
     font-weight: 700;
+  }
+  .debug {
+    margin-top: 1rem;
+    font-size: 11px;
+    color: var(--muted);
+    word-break: break-all;
+    text-align: left;
+    background: #f8f8f8;
+    padding: 8px;
+    border-radius: 6px;
+    display: none;
   }
 </style>
 </head>
@@ -102,17 +113,20 @@
     <h1>Confirming your account...</h1>
     <p>Just a moment while we finish setting things up.</p>
   </div>
-  <p id="stuck-help" style="display:none; margin-top:1.25rem;">
-    Taking longer than expected?
-    <a href="/login.html" style="color:var(--blue); font-weight:600;">Try signing in</a>
-    or contact <a href="mailto:cleveland@incrhouse.com" style="color:var(--blue); font-weight:600;">support</a>.
-  </p>
+  <div id="debug" class="debug"></div>
 </div>
 
 <script>
   const SUPABASE_URL = 'https://hinsbtiahzgccnjyovvc.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhpbnNidGlhaHpnY2NuanlvdnZjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MjM0MjQsImV4cCI6MjA5ODM5OTQyNH0.aza9Xin6Qa3qAncGVl3P1TLGstKpA83Bqs8DywBoGyw';
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  function log(msg) {
+    console.log('[confirm]', msg);
+    const el = document.getElementById('debug');
+    el.style.display = 'block';
+    el.innerHTML += msg + '<br>';
+  }
 
   function showError(msg) {
     document.getElementById('content').innerHTML =
@@ -122,120 +136,115 @@
       '<a href="/login.html" class="btn">Back to sign in</a>';
   }
 
-  function showSuccess(msg) {
+  function showSuccess(name) {
     document.getElementById('content').innerHTML =
       '<div class="icon-success">✓</div>' +
-      '<h1>You\\'re all set</h1>' +
-      '<p>' + msg + '</p>' +
-      '<a href="/dashboard.html" class="btn">Go to your dashboard</a>';
+      '<h1>You\'re all set' + (name ? ', ' + name.split(' ')[0] + '!' : '!') + '</h1>' +
+      '<p>Your account is confirmed and ready. Head to your dashboard to get started.</p>' +
+      '<a href="/dashboard.html" class="btn">Go to my dashboard →</a>';
   }
 
   async function finishSetup() {
-    // Supabase's JS client parses the access_token from the URL hash
-    // asynchronously on page load via the onAuthStateChange listener.
-    // Calling getSession() immediately can race ahead of that parsing,
-    // so we wait for either a SIGNED_IN/INITIAL_SESSION event or a
-    // short timeout as a fallback, instead of checking only once.
+    // Parse tokens directly from the URL hash ourselves
+    // This is the most reliable method regardless of Supabase client version
+    const hash = window.location.hash.substring(1);
+    const params = new URLSearchParams(hash);
+    const accessToken = params.get('access_token');
+    const refreshToken = params.get('refresh_token');
+    const type = params.get('type');
 
-    const session = await new Promise((resolve) => {
-      let resolved = false;
+    log('type=' + type + ' hasToken=' + !!accessToken);
 
-      const { data: listener } = sb.auth.onAuthStateChange((event, session) => {
-        if (!resolved && session) {
-          resolved = true;
-          listener.subscription.unsubscribe();
-          resolve(session);
-        }
-      });
-
-      // Fallback: also try a direct check in case the event already fired
-      sb.auth.getSession().then(({ data }) => {
-        if (!resolved && data.session) {
-          resolved = true;
-          listener.subscription.unsubscribe();
-          resolve(data.session);
-        }
-      });
-
-      // Final fallback timeout so we never hang forever
-      setTimeout(() => {
-        if (!resolved) {
-          resolved = true;
-          listener.subscription.unsubscribe();
-          resolve(null);
-        }
-      }, 6000);
-    });
-
-    if (!session || !session.user) {
-      showError('We could not verify your confirmation link. It may have expired. Please try signing up again or contact support.');
+    if (!accessToken) {
+      // No token in hash — check if there's already an active session
+      const { data: { session } } = await sb.auth.getSession();
+      if (session) {
+        log('existing session found');
+        await createLearnerRecord(session.user);
+      } else {
+        showError('No confirmation token found. The link may have expired. Please try signing up again.');
+      }
       return;
     }
 
-    const user = session.user;
-    const meta = user.user_metadata || {};
+    // Set the session manually using the tokens from the URL
+    log('setting session from URL tokens...');
+    const { data, error } = await sb.auth.setSession({
+      access_token: accessToken,
+      refresh_token: refreshToken
+    });
 
-    // Check if a learner record already exists (avoids duplicate on repeat visits)
-    const { data: existingLearner } = await sb
+    if (error || !data.session) {
+      log('setSession error: ' + (error ? error.message : 'no session'));
+      showError('Your confirmation link has expired or is invalid. Please try signing up again.');
+      return;
+    }
+
+    log('session set, user=' + data.session.user.email);
+    await createLearnerRecord(data.session.user);
+  }
+
+  async function createLearnerRecord(user) {
+    const meta = user.user_metadata || {};
+    log('creating learner for ' + user.email);
+
+    // Check for existing learner record first
+    const { data: existing } = await sb
       .from('learners')
-      .select('id')
+      .select('id, full_name')
       .eq('auth_user_id', user.id)
       .maybeSingle();
 
-    if (existingLearner) {
-      showSuccess('Your account is already confirmed and ready to go.');
+    if (existing) {
+      log('learner already exists');
+      showSuccess(existing.full_name);
       return;
     }
 
-    let cohort = null;
-    if (meta.cohortId) {
-      const { data: cohortData } = await sb
-        .from('cohorts')
-        .select('*')
-        .eq('id', meta.cohortId)
-        .single();
-      cohort = cohortData;
-    }
-
-    const { data: learnerData, error: learnerError } = await sb
+    // Create the learner record
+    const { data: learner, error: learnerErr } = await sb
       .from('learners')
       .insert({
         auth_user_id: user.id,
         email: user.email,
         full_name: meta.fullName || null,
-        organization_name: cohort ? cohort.organization_name : (meta.org || null)
+        organization_name: meta.org || null
       })
       .select()
       .single();
 
-    if (learnerError) {
-      showError('Your email was confirmed, but we had trouble finishing your profile setup. Please contact support at cleveland@incrhouse.com.');
+    if (learnerErr) {
+      log('learner insert error: ' + learnerErr.message);
+      showError('Your email was confirmed but we had trouble finishing your profile setup. Please contact cleveland@incrhouse.com');
       return;
     }
 
-    if (cohort) {
-      await sb.from('enrollments').insert({
-        learner_id: learnerData.id,
-        course_id: cohort.course_id,
-        cohort_id: cohort.id,
-        enrollment_type: 'cohort'
-      });
+    log('learner created: ' + learner.id);
 
-      await sb.from('cohorts').update({
-        seats_used: (cohort.seats_used || 0) + 1
-      }).eq('id', cohort.id);
+    // Handle cohort enrollment if they signed up with an access code
+    if (meta.cohortId) {
+      const { data: cohort } = await sb
+        .from('cohorts')
+        .select('*')
+        .eq('id', meta.cohortId)
+        .single();
 
-      showSuccess('You have been enrolled in ' + (cohort.name || 'your course') + '. Welcome!');
-      return;
+      if (cohort) {
+        await sb.from('enrollments').insert({
+          learner_id: learner.id,
+          course_id: cohort.course_id,
+          cohort_id: cohort.id,
+          enrollment_type: 'cohort'
+        });
+        await sb.from('cohorts').update({
+          seats_used: (cohort.seats_used || 0) + 1
+        }).eq('id', cohort.id);
+        log('enrolled in cohort: ' + cohort.name);
+      }
     }
 
-    showSuccess('Your account is ready. Head to your dashboard to choose a course.');
+    showSuccess(meta.fullName);
   }
-
-  setTimeout(() => {
-    const help = document.getElementById('stuck-help');
-    if (help) help.style.display = 'block';
-  }, 5000);
 
   finishSetup();
 </script>
