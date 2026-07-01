@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Programs — Robinson House Learn</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Fraunces:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --charcoal: #1C1C1E; --amber: #E8A020; --amber-light: #FDF3E0;
+    --amber-dark: #C8851A; --blue: #0066F5; --blue-light: #EAF1FF;
+    --blue-dark: #0050C2; --teal: #0F9E76; --teal-light: #E1F8F0;
+    --navy: #1A3A5C; --body: #3D3D3A; --muted: #8A8A85;
+    --soft-gray: #F5F5F3; --white: #FFFFFF; --border: #E8E8E4;
+    --red: #C0392B;
+  }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; color: var(--body); background: var(--white); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+
+  nav { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 2rem; height: 72px; display: flex; align-items: center; justify-content: space-between; }
+  .nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+  .logo-mark { width: 38px; height: 38px; background: var(--charcoal); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 16px; }
+  .logo-name { font-size: 15px; font-weight: 600; color: var(--charcoal); display: block; }
+  .logo-sub { font-size: 11px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; display: block; }
+  .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
+  .nav-links a { font-size: 14px; color: var(--body); text-decoration: none; }
+  .nav-links a:hover, .nav-links a.active { color: var(--blue); font-weight: 600; }
+  .btn-nav { padding: 10px 22px; background: var(--amber); color: white; border-radius: 8px; font-size: 14px; font-weight: 600; text-decoration: none; transition: background 0.15s; }
+  .btn-nav:hover { background: var(--amber-dark); }
+
+  .page-hero { background: linear-gradient(160deg, var(--blue-light) 0%, var(--white) 100%); border-bottom: 1px solid var(--border); padding: 64px 2rem; text-align: center; position: relative; overflow: hidden; }
+  .hero-blob { position: absolute; border-radius: 50%; }
+  .hero-blob-1 { width: 300px; height: 300px; background: var(--amber); opacity: 0.06; top: -100px; right: -80px; }
+  .hero-blob-2 { width: 200px; height: 200px; background: var(--blue); opacity: 0.08; bottom: -60px; left: -60px; }
+  .page-hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; background: var(--amber-light); color: var(--amber-dark); font-size: 12px; font-weight: 600; letter-spacing: 0.05em; padding: 5px 14px; border-radius: 40px; margin-bottom: 1.25rem; position: relative; z-index: 1; }
+  .page-hero h1 { font-family: 'Fraunces', serif; font-size: 48px; font-weight: 600; color: var(--charcoal); line-height: 1.15; margin-bottom: 1rem; letter-spacing: -0.02em; position: relative; z-index: 1; }
+  .page-hero p { font-size: 18px; color: var(--muted); max-width: 560px; margin: 0 auto 2rem; line-height: 1.65; position: relative; z-index: 1; }
+  .hero-tabs { display: inline-flex; gap: 8px; background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 4px; position: relative; z-index: 1; }
+  .hero-tab { padding: 10px 28px; border-radius: 9px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; background: transparent; color: var(--muted); transition: all 0.2s; font-family: 'Plus Jakarta Sans', sans-serif; }
+  .hero-tab.active { background: var(--blue); color: white; box-shadow: 0 2px 8px rgba(0,102,245,0.25); }
+
+  .page-wrap { max-width: 920px; margin: 0 auto; padding: 0 2rem 6rem; }
+  .course-section { padding-top: 4rem; display: none; }
+  .course-section.active { display: block; }
+
+  .course-header { display: grid; grid-template-columns: 1fr 240px; gap: 2.5rem; align-items: start; margin-bottom: 3rem; }
+  .course-badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 40px; margin-bottom: 0.75rem; }
+  .badge-amber { background: var(--amber-light); color: var(--amber-dark); }
+  .badge-navy { background: var(--blue-light); color: var(--navy); }
+  .course-title { font-family: 'Fraunces', serif; font-size: 38px; font-weight: 600; color: var(--charcoal); margin-bottom: 0.75rem; }
+  .course-desc { font-size: 16px; color: var(--muted); line-height: 1.65; margin-bottom: 1.25rem; }
+  .course-stats { display: flex; gap: 16px; flex-wrap: wrap; }
+  .course-stat { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+
+  .enroll-card { background: var(--soft-gray); border: 1.5px solid var(--border); border-radius: 16px; padding: 1.5rem; text-align: center; }
+  .enroll-price { font-family: 'Fraunces', serif; font-size: 38px; font-weight: 600; color: var(--charcoal); line-height: 1; margin-bottom: 4px; }
+  .enroll-price-sub { font-size: 12px; color: var(--muted); margin-bottom: 1.25rem; }
+  .enroll-features { text-align: left; margin-bottom: 1.25rem; }
+  .enroll-feature { font-size: 13px; color: var(--body); display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+  .enroll-feature::before { content: '✓'; color: var(--teal); font-weight: 700; font-size: 12px; }
+  .btn-enroll { display: block; width: 100%; padding: 13px; background: var(--blue); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; text-align: center; text-decoration: none; transition: background 0.15s; font-family: 'Plus Jakarta Sans', sans-serif; }
+  .btn-enroll:hover { background: var(--blue-dark); }
+
+  .section-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin-bottom: 1rem; margin-top: 2.5rem; }
+
+  .compare-banner { background: var(--blue-light); border: 1.5px solid rgba(0,102,245,0.15); border-radius: 14px; padding: 1.25rem 1.5rem; margin-bottom: 2.5rem; display: flex; align-items: center; gap: 14px; }
+  .compare-icon { font-size: 24px; flex-shrink: 0; }
+  .compare-text { font-size: 14px; color: var(--navy); line-height: 1.55; }
+  .compare-text strong { font-weight: 600; }
+
+  .outcomes-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 2.5rem; }
+  .outcome-item { background: var(--blue-light); border-radius: 10px; padding: 0.9rem 1.1rem; font-size: 14px; color: var(--navy); display: flex; align-items: flex-start; gap: 10px; line-height: 1.5; }
+  .outcome-item::before { content: '→'; color: var(--blue); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+
+  .module-accordion { border: 1.5px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 2.5rem; }
+  .module-row { border-bottom: 1px solid var(--border); }
+  .module-row:last-child { border-bottom: none; }
+  .module-header { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.5rem; cursor: pointer; transition: background 0.15s; gap: 1rem; background: var(--white); }
+  .module-header:hover { background: var(--soft-gray); }
+  .module-header.open { background: var(--blue-light); }
+  .module-left { display: flex; align-items: center; gap: 14px; }
+  .module-num { width: 32px; height: 32px; border-radius: 8px; background: var(--soft-gray); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: var(--muted); flex-shrink: 0; transition: all 0.2s; }
+  .module-header.open .module-num { background: var(--blue); color: white; }
+  .module-name { font-size: 15px; font-weight: 600; color: var(--charcoal); }
+  .module-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .module-tag { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; margin-left: 8px; vertical-align: middle; }
+  .tag-new { background: var(--amber-light); color: var(--amber-dark); }
+  .tag-security { background: #FBEAEA; color: var(--red); }
+  .module-chevron { font-size: 18px; color: var(--muted); transition: transform 0.2s; flex-shrink: 0; }
+  .module-header.open .module-chevron { transform: rotate(180deg); }
+  .module-lessons { display: none; background: var(--white); border-top: 1px solid var(--border); }
+  .module-lessons.open { display: block; }
+  .lesson-row { display: flex; align-items: flex-start; gap: 12px; padding: 0.85rem 1.5rem 0.85rem 4.5rem; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--body); line-height: 1.45; }
+  .lesson-row:last-child { border-bottom: none; }
+  .lesson-icon { font-size: 13px; flex-shrink: 0; margin-top: 1px; color: var(--muted); }
+  .lesson-win { font-size: 12px; color: var(--teal); font-weight: 500; margin-top: 3px; }
+  .quiz-row { display: flex; align-items: center; gap: 10px; padding: 0.85rem 1.5rem 0.85rem 4.5rem; font-size: 13px; color: var(--blue); font-weight: 600; background: var(--blue-light); }
+
+  .audience-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 2.5rem; }
+  .audience-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; text-align: center; }
+  .audience-icon { font-size: 28px; margin-bottom: 0.5rem; }
+  .audience-label { font-size: 13px; font-weight: 600; color: var(--charcoal); margin-bottom: 4px; }
+  .audience-sub { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  .bottom-cta { background: var(--navy); border-radius: 20px; padding: 3rem 2rem; text-align: center; margin-bottom: 3rem; position: relative; overflow: hidden; }
+  .bottom-cta-blob { position: absolute; top: -60px; right: -60px; width: 200px; height: 200px; border-radius: 50%; background: var(--amber); opacity: 0.12; }
+  .bottom-cta h2 { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 600; color: white; margin-bottom: 0.75rem; position: relative; z-index: 1; }
+  .bottom-cta p { font-size: 15px; color: rgba(255,255,255,0.65); margin-bottom: 1.75rem; position: relative; z-index: 1; max-width: 440px; margin-left: auto; margin-right: auto; }
+  .bottom-cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; position: relative; z-index: 1; }
+  .btn-cta-primary { padding: 13px 28px; background: var(--amber); color: white; border-radius: 10px; font-size: 15px; font-weight: 700; text-decoration: none; transition: background 0.15s; }
+  .btn-cta-primary:hover { background: var(--amber-dark); }
+  .btn-cta-outline { padding: 13px 28px; background: transparent; color: white; border: 1.5px solid rgba(255,255,255,0.3); border-radius: 10px; font-size: 15px; font-weight: 700; text-decoration: none; transition: all 0.15s; }
+  .btn-cta-outline:hover { background: rgba(255,255,255,0.1); }
+
+  @media (max-width: 768px) {
+    .course-header { grid-template-columns: 1fr; }
+    .outcomes-grid { grid-template-columns: 1fr; }
+    .audience-grid { grid-template-columns: repeat(2, 1fr); }
+    .page-hero h1 { font-size: 32px; }
+    .nav-links { display: none; }
+    .lesson-row { padding-left: 2.5rem; }
+    .quiz-row { padding-left: 2.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">
+    <div class="logo-mark">R</div>
+    <div>
+      <span class="logo-name">Robinson House Learn</span>
+      <span class="logo-sub">AI Education for Today and Tomorrow</span>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="/programs.html" class="active">Programs</a></li>
+    <li><a href="/#states">For States</a></li>
+    <li><a href="/#states">For Organizations</a></li>
+    <li><a href="/#instructor">About</a></li>
+  </ul>
+  <a href="/login.html" class="btn-nav">Get started</a>
+</nav>
+
+<div class="page-hero">
+  <div class="hero-blob hero-blob-1"></div>
+  <div class="hero-blob hero-blob-2"></div>
+  <div class="page-hero-eyebrow">✦ Full Curriculum</div>
+  <h1>Two programs.<br>Built for real results.</h1>
+  <p>Every module, every lesson, every skill — mapped out so you know exactly what you're getting before you enroll.</p>
+  <div class="hero-tabs">
+    <button class="hero-tab active" onclick="showCourse('unlocked', this)">AI Unlocked</button>
+    <button class="hero-tab" onclick="showCourse('ready', this)">AI Ready</button>
+  </div>
+</div>
+
+<div class="page-wrap">
+
+  <!-- ============ AI UNLOCKED ============ -->
+  <div class="course-section active" id="section-unlocked">
+    <div class="course-header">
+      <div>
+        <span class="course-badge badge-amber">Public Workforce Program</span>
+        <div class="course-title">AI Unlocked</div>
+        <div class="course-desc">A self-paced, foundational AI literacy program for the general public, career changers, and community organizations. No coding required. No jargon. Real skills you can use Monday morning.</div>
+        <div class="course-stats">
+          <span class="course-stat">📚 7 modules · 25 lessons</span>
+          <span class="course-stat">⏱ Self-paced</span>
+          <span class="course-stat">🎓 Certificate of Foundational AI Competency</span>
+          <span class="course-stat">🔒 Includes AI Security module</span>
+        </div>
+      </div>
+      <div class="enroll-card">
+        <div class="enroll-price">$297</div>
+        <div class="enroll-price-sub">one-time · lifetime access</div>
+        <div class="enroll-features">
+          <div class="enroll-feature">7 modules · 25 lessons</div>
+          <div class="enroll-feature">7 module quizzes</div>
+          <div class="enroll-feature">Capstone project</div>
+          <div class="enroll-feature">Certificate of completion</div>
+          <div class="enroll-feature">Lifetime access</div>
+        </div>
+        <a href="/login.html" class="btn-enroll">Enroll now →</a>
+      </div>
+    </div>
+
+    <div class="section-label">What you'll be able to do</div>
+    <div class="outcomes-grid">
+      <div class="outcome-item">Understand what AI is, how it works, and what its real limits are</div>
+      <div class="outcome-item">Navigate and compare ChatGPT, Claude, Gemini, and Copilot confidently</div>
+      <div class="outcome-item">Write effective prompts using a proven framework</div>
+      <div class="outcome-item">Generate images, music, podcasts, and video clips with AI tools</div>
+      <div class="outcome-item">Build a one-page business plan using AI in under an hour</div>
+      <div class="outcome-item">Analyze spreadsheet data by describing what you want in plain English</div>
+      <div class="outcome-item">Fact-check AI output and spot deepfakes and voice cloning scams</div>
+      <div class="outcome-item">Build and deploy a simple AI agent for a repeating task</div>
+      <div class="outcome-item">Complete a real capstone project for your resume or portfolio</div>
+    </div>
+
+    <div class="section-label">Full curriculum</div>
+    <div class="module-accordion">
+
+      <div class="module-row">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-left">
+            <div class="module-num">1</div>
+            <div>
+              <div class="module-name">AI Foundations & the Platform Landscape <span class="module-tag tag-new">New</span></div>
+              <div class="module-sub">5 lessons · Quiz · Platform comparison activity</div>
+            </div>
+          </div>
+          <div class="module-chevron">⌄</div>
+        </div>
+        <div class="module-lessons">
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>What AI Actually Is (No Jargon)<div class="lesson-win">✦ Win: Separate AI fact from fiction with confidence</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>The Major Platforms — ChatGPT, Claude, Gemini, Copilot<div class="lesson-win">✦ Win: Run the same question through all four and document the differences</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>How to Pick the Right Tool for the Right Task<div class="lesson-win">✦ Win: Your personal AI platform selection guide</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>What AI Cannot Do — Hallucination, Bias, and Limits<div class="lesson-win">✦ Win: Catch an AI error on a topic you know well</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>What Data Is Safe to Share With AI<div class="lesson-win">✦ Win: Know exactly what to never type into a public AI tool</div></div></div>
+          <div class="quiz-row">📝 Module 1 Quiz — AI Foundations Check</div>
+        </div>
+      </div>
+
+      <div class="module-row">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-left">
+            <div class="module-num">2</div>
+            <div>
+              <div class="module-name">Prompting & Communication</div>
+              <div class="module-sub">5 lessons · Quiz · P.C.T.C. Framework</div>
+            </div>
+          </div>
+          <div class="module-chevron">⌄</div>
+        </div>
+        <div class="module-lessons">
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Demystifying the Black Box<div class="lesson-win">✦ Win: The Reverse Interview — let AI interview you</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>The Art of the Perfect Prompt (P.C.T.C. Framework)<div class="lesson-win">✦ Win: A Michelin-star recipe from your pantry</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Shifting Perspectives with Personas<div class="lesson-win">✦ Win: Pressure-test your goals with a tough AI mentor</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Taming the Info Flood<div class="lesson-win">✦ Win: Instant 3-tier summary of any long document</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Your AI Co-Writer<div class="lesson-win">✦ Win: Three versions of a difficult message — ready to send</div></div></div>
+          <div class="quiz-row">📝 Module 2 Quiz — Prompting Check</div>
+        </div>
+      </div>
+
+      <div class="module-row">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-left">
+            <div class="module-num">3</div>
+            <div>
+              <div class="module-name">The Multimedia & Creative Explosion</div>
+              <div class="module-sub">5 lessons · Quiz · Image, music, video, podcast</div>
+            </div>
+          </div>
+          <div class="module-chevron">⌄</div>
+        </div>
+        <div class="module-lessons">
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Prompting for Pictures (Adobe Firefly, Midjourney)<div class="lesson-win">✦ Win: Your AI vision board</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Designing Like a Pro — Canva AI Magic Studio<div class="lesson-win">✦ Win: A polished graphic asset</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Making Music From Thin Air — Suno<div class="lesson-win">✦ Win: A 2-minute original song</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>The Interactive Research Assistant — NotebookLM<div class="lesson-win">✦ Win: A custom AI podcast from your own documents</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Video Motion Canvas — Runway, Luma<div class="lesson-win">✦ Win: A 4-second cinematic clip from a still image</div></div></div>
+          <div class="quiz-row">📝 Module 3 Quiz — Creative Tools Check</div>
+        </div>
+      </div>
+
+      <div class="module-row">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-left">
+            <div class="module-num">4</div>
+            <div>
+              <div class="module-name">Everyday Business & Productivity Power</div>
+              <div class="module-sub">5 lessons · Quiz · Real deliverables</div>
+            </div>
+          </div>
+          <div class="module-chevron">⌄</div>
+        </div>
+        <div class="module-lessons">
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>The Ultimate Brainstormer<div class="lesson-win">✦ Win: 50 business idea concepts in minutes</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Drafting a One-Page Business Plan<div class="lesson-win">✦ Win: A complete Lean Canvas for your idea</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>The Omnichannel Marketing Machine<div class="lesson-win">✦ Win: Email, LinkedIn post, and video script — done</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Conquering Data & Spreadsheets<div class="lesson-win">✦ Win: Hidden insight found in your own data</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Building Reusable Digital Assistants<div class="lesson-win">✦ Win: Your first custom AI tool, live and shareable</div></div></div>
+          <div class="quiz-row">📝 Module 4 Quiz — Business & Productivity Check</div>
+        </div>
+      </div>
+
+      <div class="module-row">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-left">
+            <div class="module-num">5</div>
+            <div>
+              <div class="module-name">Knowing What to Trust — AI Safety <span class="module-tag tag-security">Security</span></div>
+              <div class="module-sub">4 lessons · Quiz · Personal AI Safety Protocol</div>
+            </div>
+          </div>
+          <div class="module-chevron">⌄</div>
+        </div>
+        <div class="module-lessons">
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>When to Fact-Check AI and How<div class="lesson-win">✦ Win: Verify every claim in an AI paragraph on a topic you know</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Spotting Deepfakes and AI Misinformation<div class="lesson-win">✦ Win: Reverse image search three social media images</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Voice Cloning Scams — How They Work and How to Stop Them<div class="lesson-win">✦ Win: Establish a family verification passphrase today</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Your Personal AI Safety Protocol<div class="lesson-win">✦ Win: A one-page written AI safety policy for your household</div></div></div>
+          <div class="quiz-row">📝 Module 5 Quiz — AI Safety Check</div>
+        </div>
+      </div>
+
+      <div class="module-row">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-left">
+            <div class="module-num">6</div>
+            <div>
+              <div class="module-name">Working With AI Agents</div>
+              <div class="module-sub">4 lessons · Quiz · Build your first agent</div>
+            </div>
+          </div>
+          <div class="module-chevron">⌄</div>
+        </div>
+        <div class="module-lessons">
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>What an Agent Actually Is<div class="lesson-win">✦ Win: Build a simple agent for a recurring task</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Teaching Your Agent Boundaries<div class="lesson-win">✦ Win: A written rules document for your agent</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Agents That Work Together<div class="lesson-win">✦ Win: A two-tool automated workflow you built</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Project Management With AI<div class="lesson-win">✦ Win: A real project plan with timelines and milestones</div></div></div>
+          <div class="quiz-row">📝 Module 6 Quiz — AI Agents Check</div>
+        </div>
+      </div>
+
+      <div class="module-row">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-left">
+            <div class="module-num">7</div>
+            <div>
+              <div class="module-name">Advanced Workflows & Capstone Showcase</div>
+              <div class="module-sub">3 lessons · Capstone project · Certificate</div>
+            </div>
+          </div>
+          <div class="module-chevron">⌄</div>
+        </div>
+        <div class="module-lessons">
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Voice Agents & Live Interaction<div class="lesson-win">✦ Win: Mock negotiation with live AI feedback</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Multi-Tool Assembly Lines<div class="lesson-win">✦ Win: Poem → song → cover card in one workflow</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>The Capstone Blueprint & Assembly<div class="lesson-win">✦ Win: Your completed capstone in your chosen track</div></div></div>
+          <div class="quiz-row">🎓 Choose your path: Career Changer · Entrepreneur · Creator</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="section-label">Who this is for</div>
+    <div class="audience-grid">
+      <div class="audience-card"><div class="audience-icon">💼</div><div class="audience-label">Career changers</div><div class="audience-sub">Add AI literacy to your resume and stand out immediately</div></div>
+      <div class="audience-card"><div class="audience-icon">🏛️</div><div class="audience-label">Government workers</div><div class="audience-sub">Be ready before AI arrives in your agency</div></div>
+      <div class="audience-card"><div class="audience-icon">⛪</div><div class="audience-label">Community members</div><div class="audience-sub">Churches, nonprofits, and community organizations</div></div>
+      <div class="audience-card"><div class="audience-icon">🎓</div><div class="audience-label">Students</div><div class="audience-sub">Graduate with skills most employers can't find</div></div>
+      <div class="audience-card"><div class="audience-icon">🏥</div><div class="audience-label">Healthcare workers</div><div class="audience-sub">AI is already in your workplace — be ready for it</div></div>
+      <div class="audience-card"><div class="audience-icon">👩‍💼</div><div class="audience-label">Professionals</div><div class="audience-sub">Save hours every week with AI-powered workflows</div></div>
+    </div>
+
+    <div class="bottom-cta">
+      <div class="bottom-cta-blob"></div>
+      <h2>Ready to get started?</h2>
+      <p>Join AI Unlocked and build real AI competency — with a certificate and a portfolio project to prove it.</p>
+      <div class="bottom-cta-actions">
+        <a href="/login.html" class="btn-cta-primary">Enroll now — $297</a>
+        <a href="/#states" class="btn-cta-outline">For organizations →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ AI READY ============ -->
+  <div class="course-section" id="section-ready">
+    <div class="course-header">
+      <div>
+        <span class="course-badge badge-navy">Higher Ed / Corporate Program</span>
+        <div class="course-title">AI Ready</div>
+        <div class="course-desc">A 9-module professional automation program for community colleges, universities, and large employers. Comparable to leading programs from UT Austin and Johns Hopkins — built to be more practical, more applicable, and more digestible.</div>
+        <div class="course-stats">
+          <span class="course-stat">📚 9 modules · 29 lessons</span>
+          <span class="course-stat">🏛 3 CEUs · 1–3 credit hours</span>
+          <span class="course-stat">🔒 AI Risk & Security module</span>
+          <span class="course-stat">📋 Institutional licensing available</span>
+        </div>
+      </div>
+      <div class="enroll-card">
+        <div class="enroll-price">$497</div>
+        <div class="enroll-price-sub">individual · or request org pricing</div>
+        <div class="enroll-features">
+          <div class="enroll-feature">9 modules · 29 lessons</div>
+          <div class="enroll-feature">9 module quizzes</div>
+          <div class="enroll-feature">Live capstone simulation</div>
+          <div class="enroll-feature">3 CEUs upon completion</div>
+          <div class="enroll-feature">Graduation portfolio</div>
+        </div>
+        <a href="mailto:cleveland@incrhouse.com?subject=AI Ready Enrollment" class="btn-enroll">Request enrollment →</a>
+      </div>
+    </div>
+
+    <div class="compare-banner">
+      <div class="compare-icon">🏛️</div>
+      <div class="compare-text"><strong>How AI Ready compares:</strong> UT Austin's AI for Business Leaders covers 5 CEUs across 6 months. Johns Hopkins' Applied GenAI program covers 11 CEUs across 13 weeks. AI Ready delivers the same foundational competency — including AI Risk, Platform Landscape, Agentic Workflows, and a Capstone Portfolio — in a more digestible format designed for working professionals without a technical background.</div>
+    </div>
+
+    <div class="section-label">What you'll be able to do</div>
+    <div class="outcomes-grid">
+      <div class="outcome-item">Map the full AI platform landscape and evaluate tools professionally</div>
+      <div class="outcome-item">Build and enforce an organizational AI Acceptable Use Policy</div>
+      <div class="outcome-item">Apply the NIST AI Risk Management Framework to your work</div>
+      <div class="outcome-item">Master ChatGPT, Claude, and Gemini for professional tasks</div>
+      <div class="outcome-item">Build a complete presentation from raw notes in 15 minutes</div>
+      <div class="outcome-item">Analyze data and write spreadsheet formulas using plain English</div>
+      <div class="outcome-item">Build custom AI agents trained on your specific professional context</div>
+      <div class="outcome-item">Design multi-step automated workflows that run hands-free</div>
+      <div class="outcome-item">Detect deepfakes and protect your organization from AI fraud</div>
+      <div class="outcome-item">Complete a graduation portfolio ready for your next role</div>
+    </div>
+
+    <div class="section-label">Full curriculum</div>
+    <div class="module-accordion">
+
+      <div class="module-row">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-left">
+            <div class="module-num">1</div>
+            <div>
+              <div class="module-name">The AI Landscape for Professionals <span class="module-tag tag-new">New</span></div>
+              <div class="module-sub">5 lessons · Quiz · Platform map deliverable</div>
+            </div>
+          </div>
+          <div class="module-chevron">⌄</div>
+        </div>
+        <div class="module-lessons">
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>AI vs GenAI vs Agentic AI — What the Difference Means for Your Work<div class="lesson-win">✦ Win: Map one task from your role to each AI category</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>The Professional AI Platform Map (30+ tools by category)<div class="lesson-win">✦ Win: Your organization's completed AI Platform Map</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>How to Evaluate an AI Tool Before Adopting It Professionally<div class="lesson-win">✦ Win: Five-dimension evaluation of a tool you currently use</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>How AI Is Transforming 6 Industries<div class="lesson-win">✦ Win: One-paragraph industry analysis for your specific sector</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>AI Limitations Every Professional Must Know<div class="lesson-win">✦ Win: Three limitations mapped to your professional role</div></div></div>
+          <div class="quiz-row">📝 Module 1 Quiz — AI Landscape Check</div>
+        </div>
+      </div>
+
+      <div class="module-row">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-left">
+            <div class="module-num">2</div>
+            <div>
+              <div class="module-name">AI Risk, Security & Responsible Use <span class="module-tag tag-security">Security</span></div>
+              <div class="module-sub">6 lessons · Quiz · AI Policy deliverable</div>
+            </div>
+          </div>
+          <div class="module-chevron">⌄</div>
+        </div>
+        <div class="module-lessons">
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Hallucination and Bias in Professional AI Outputs<div class="lesson-win">✦ Win: Structured accuracy and bias audit of 3 AI outputs</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>What Never Goes in a Prompt — Data Classification for AI<div class="lesson-win">✦ Win: Classify 10 common workplace data types across 4 tiers</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Prompt Injection and AI Security Threats<div class="lesson-win">✦ Win: Document a safeguard that would have prevented a real attack</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Intellectual Property and AI — What You Own, What You Do Not<div class="lesson-win">✦ Win: Your organization's current IP position on AI content</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>The NIST AI Risk Management Framework in Plain English<div class="lesson-win">✦ Win: Map one AI tool against Govern, Map, Measure, Manage</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Building Your Organization's AI Acceptable Use Policy<div class="lesson-win">✦ Win: A one-page AI Acceptable Use Policy ready for your team</div></div></div>
+          <div class="quiz-row">📝 Module 2 Quiz — AI Risk & Security Check</div>
+        </div>
+      </div>
+
+      <div class="module-row">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-left">
+            <div class="module-num">3</div>
+            <div>
+              <div class="module-name">The Core LLM Trinity — ChatGPT, Claude, Gemini</div>
+              <div class="module-sub">3 lessons · Quiz · Tri-model pressure test</div>
+            </div>
+          </div>
+          <div class="module-chevron">⌄</div>
+        </div>
+        <div class="module-lessons">
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>The Strengths Shift — When to Use Which Model<div class="lesson-win">✦ Win: A decision framework for choosing the right LLM</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Structural Prompt Architecture — Personas, Variables, Rules, Constraints<div class="lesson-win">✦ Win: A reusable prompt template for your most common task</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Lab: The Tri-Model Pressure Test<div class="lesson-win">✦ Win: Side-by-side output comparison from all three models</div></div></div>
+          <div class="quiz-row">📝 Module 3 Quiz — LLM Trinity Check</div>
+        </div>
+      </div>
+
+      <div class="module-row">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-left">
+            <div class="module-num">4</div>
+            <div>
+              <div class="module-name">Workplace Suites & Automated Presentations</div>
+              <div class="module-sub">3 lessons · Quiz · 15-minute presentation lab</div>
+            </div>
+          </div>
+          <div class="module-chevron">⌄</div>
+        </div>
+        <div class="module-lessons">
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Prompt-to-Presentation with Gamma App<div class="lesson-win">✦ Win: A 10-slide deck from one paragraph of raw notes</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Suite Automation with Microsoft Copilot<div class="lesson-win">✦ Win: A formatted Word proposal from raw transcript data</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Lab: The 15-Minute Executive Presentation<div class="lesson-win">✦ Win: A client-ready, fully animated presentation deck</div></div></div>
+          <div class="quiz-row">📝 Module 4 Quiz — Workplace Suites Check</div>
+        </div>
+      </div>
+
+      <div class="module-row">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-left">
+            <div class="module-num">5</div>
+            <div>
+              <div class="module-name">Project Management & Data Analysis</div>
+              <div class="module-sub">3 lessons · Quiz · Live project dashboard</div>
+            </div>
+          </div>
+          <div class="module-chevron">⌄</div>
+        </div>
+        <div class="module-lessons">
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Conversational Spreadsheets with ChatGPT<div class="lesson-win">✦ Win: Formulas and chart from a real data file using plain English</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Automated Project Tracking with Notion AI<div class="lesson-win">✦ Win: Meeting notes converted to action items and SOPs</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Lab: The Project Manager's Dashboard<div class="lesson-win">✦ Win: A live, populated project roadmap from raw data</div></div></div>
+          <div class="quiz-row">📝 Module 5 Quiz — Project Management Check</div>
+        </div>
+      </div>
+
+      <div class="module-row">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-left">
+            <div class="module-num">6</div>
+            <div>
+              <div class="module-name">Building Custom AI Agents & Workflow Chaining</div>
+              <div class="module-sub">3 lessons · Quiz · Deploy your digital employee</div>
+            </div>
+          </div>
+          <div class="module-chevron">⌄</div>
+        </div>
+        <div class="module-lessons">
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Agentic Infrastructure — Custom GPTs and Claude Projects<div class="lesson-win">✦ Win: A custom agent with defined identity and knowledge base</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Workflow Chaining — Connecting Tools Hands-Free<div class="lesson-win">✦ Win: A multi-tool automated output assembly</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Lab: Deploying Your Digital Employee<div class="lesson-win">✦ Win: A live, functional custom agent for your career or business</div></div></div>
+          <div class="quiz-row">📝 Module 6 Quiz — Custom Agents Check</div>
+        </div>
+      </div>
+
+      <div class="module-row">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-left">
+            <div class="module-num">7</div>
+            <div>
+              <div class="module-name">Agentic Workflows & AI Project Management</div>
+              <div class="module-sub">6 lessons · Quiz · Governed agent build</div>
+            </div>
+          </div>
+          <div class="module-chevron">⌄</div>
+        </div>
+        <div class="module-lessons">
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Orchestration Fundamentals<div class="lesson-win">✦ Win: Map a real workflow with branching logic and stop conditions</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Tool Use & Function Calling (Conceptual)<div class="lesson-win">✦ Win: Understand how agents take real-world action</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Guardrails & Governance (NIST Framework)<div class="lesson-win">✦ Win: A written guardrails document for an AI agent</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Evaluation — Measuring Agent Reliability<div class="lesson-win">✦ Win: A structured agent evaluation scorecard</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>AI-Augmented Project Management<div class="lesson-win">✦ Win: AI-generated project plan with risk flags</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Lab: The Governed Agent Build<div class="lesson-win">✦ Win: A deployed, documented, and evaluated AI agent</div></div></div>
+          <div class="quiz-row">📝 Module 7 Quiz — Agentic Workflows Check</div>
+        </div>
+      </div>
+
+      <div class="module-row">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-left">
+            <div class="module-num">8</div>
+            <div>
+              <div class="module-name">Digital Self-Defense & Synthetic Media Literacy <span class="module-tag tag-security">Security</span></div>
+              <div class="module-sub">3 lessons · Quiz · Organizational security audit</div>
+            </div>
+          </div>
+          <div class="module-chevron">⌄</div>
+        </div>
+        <div class="module-lessons">
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>The Anatomy of Deception — Visual and Audio AI Tells<div class="lesson-win">✦ Win: Spot synthetic anomalies in a real media package</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Social Engineering Countermeasures<div class="lesson-win">✦ Win: Multi-channel authentication framework for your org</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Lab: The Corporate Security Audit<div class="lesson-win">✦ Win: An organizational identity theft defense checklist</div></div></div>
+          <div class="quiz-row">📝 Module 8 Quiz — Digital Self-Defense Check</div>
+        </div>
+      </div>
+
+      <div class="module-row">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-left">
+            <div class="module-num">9</div>
+            <div>
+              <div class="module-name">Final Capstone Portfolio & Live Simulation</div>
+              <div class="module-sub">2 lessons · Live voice simulation · Graduation portfolio · 3 CEUs</div>
+            </div>
+          </div>
+          <div class="module-chevron">⌄</div>
+        </div>
+        <div class="module-lessons">
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Live Voice Simulation — 3-Minute Career or Negotiation Practice<div class="lesson-win">✦ Win: Real-time behavioral feedback on your speaking and logic</div></div></div>
+          <div class="lesson-row"><span class="lesson-icon">▶</span><div>Lab: Capstone Deployment<div class="lesson-win">✦ Win: Your completed graduation portfolio</div></div></div>
+          <div class="quiz-row">🎓 Choose your portfolio: Career Transformer · Project Manager · Corporate Creator</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="section-label">Who this is for</div>
+    <div class="audience-grid">
+      <div class="audience-card"><div class="audience-icon">🏛️</div><div class="audience-label">Community colleges</div><div class="audience-sub">Offer a CEU-bearing AI course your students actually finish</div></div>
+      <div class="audience-card"><div class="audience-icon">🏢</div><div class="audience-label">Employers</div><div class="audience-sub">Upskill your team with practical, tool-driven training</div></div>
+      <div class="audience-card"><div class="audience-icon">🏥</div><div class="audience-label">Healthcare orgs</div><div class="audience-sub">Clinical and administrative professionals ready for AI</div></div>
+      <div class="audience-card"><div class="audience-icon">🏫</div><div class="audience-label">Universities</div><div class="audience-sub">License the curriculum or bring Dr. Cleve in to teach</div></div>
+      <div class="audience-card"><div class="audience-icon">🇺🇸</div><div class="audience-label">Government agencies</div><div class="audience-sub">Fulfill OMB M-25-21 AI workforce mandate requirements</div></div>
+      <div class="audience-card"><div class="audience-icon">📋</div><div class="audience-label">Workforce boards</div><div class="audience-sub">WIOA-aligned program ready for state contract delivery</div></div>
+    </div>
+
+    <div class="bottom-cta">
+      <div class="bottom-cta-blob"></div>
+      <h2>Ready to bring AI Ready to your institution?</h2>
+      <p>Request enrollment for yourself or ask about organizational pricing, curriculum licensing, and state contract delivery.</p>
+      <div class="bottom-cta-actions">
+        <a href="mailto:cleveland@incrhouse.com?subject=AI Ready Enrollment" class="btn-cta-primary">Request enrollment →</a>
+        <a href="/#states" class="btn-cta-outline">For organizations →</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function showCourse(course, btn) {
+    document.querySelectorAll('.course-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.hero-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('section-' + course).classList.add('active');
+    btn.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function toggleModule(header) {
+    const lessons = header.nextElementSibling;
+    const isOpen = header.classList.contains('open');
+    // Close all others first
+    document.querySelectorAll('.module-header.open').forEach(h => {
+      h.classList.remove('open');
+      h.nextElementSibling.classList.remove('open');
+    });
+    if (!isOpen) {
+      header.classList.add('open');
+      lessons.classList.add('open');
+    }
+  }
+</script>
+
+</body>
+</html>
