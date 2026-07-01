@@ -485,9 +485,16 @@
               ${isUnlocked ? '$297' : '$497'}
               <span>/ one-time · lifetime access</span>
             </div>
-            <a href="/enroll.html?course=${course.slug}" class="btn-enroll">
-              Enroll in ${course.title} →
-            </a>
+            <div style="display:flex; flex-direction:column; gap:10px; margin-top:auto;">
+              <a href="/course.html?id=${course.id}" class="btn-enroll">
+                Start Module 1 Free →
+              </a>
+              <a href="/enroll.html?course=${course.slug}"
+                style="font-size:12px; color:var(--muted); text-align:center; text-decoration:none;">
+                Or enroll now for full access —
+                ${course.slug === 'ai-unlocked' ? '$97' : '$197'}
+              </a>
+            </div>
           </div>
         `;
       }
