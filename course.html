@@ -443,14 +443,16 @@ async function init() {
   state.lessons = flat;
   state.totalSteps = flat.length;
 
-  // Load progress
-  const { data: prog } = await sb.from('lesson_progress').select('*')
-    .eq('enrollment_id', enrollment.id);
-  prog?.forEach(p => { if (p.completed) state.progress[p.lesson_id] = true; });
+  // Load progress (skip for free preview users)
+  if (!state.freeOnly) {
+    const { data: prog } = await sb.from('lesson_progress').select('*')
+      .eq('enrollment_id', enrollment.id);
+    prog?.forEach(p => { if (p.completed) state.progress[p.lesson_id] = true; });
 
-  const { data: attempts } = await sb.from('quiz_attempts').select('*')
-    .eq('enrollment_id', enrollment.id);
-  attempts?.forEach(a => { state.quizAttempts[a.quiz_id] = { score: a.score, passed: a.passed }; });
+    const { data: attempts } = await sb.from('quiz_attempts').select('*')
+      .eq('enrollment_id', enrollment.id);
+    attempts?.forEach(a => { state.quizAttempts[a.quiz_id] = { score: a.score, passed: a.passed }; });
+  }
 
   // Find first incomplete step
   let startIndex = 0;
@@ -502,15 +504,17 @@ function renderCurrent() {
   const btnNext = document.getElementById('btn-next');
   const lessonPos = document.getElementById('lesson-position');
 
-  // Check if all done
-  const allLessonsDone = state.lessons.filter(l => l._type === 'lesson').every(l => state.progress[l.id]);
-  const allQuizzesPassed = Object.values(state.quizAttempts).filter(a => a.passed).length ===
-    Object.keys(state.quizzes).length;
+  // Check if all done (never show completion for free preview users)
+  if (!state.freeOnly) {
+    const allLessonsDone = state.lessons.filter(l => l._type === 'lesson').every(l => state.progress[l.id]);
+    const allQuizzesPassed = Object.values(state.quizAttempts).filter(a => a.passed).length ===
+      Object.keys(state.quizzes).length;
 
-  if (allLessonsDone && allQuizzesPassed) {
-    renderCompletion();
-    bottomNav.style.display = 'none';
-    return;
+    if (allLessonsDone && allQuizzesPassed) {
+      renderCompletion();
+      bottomNav.style.display = 'none';
+      return;
+    }
   }
 
   bottomNav.style.display = 'flex';
@@ -658,13 +662,15 @@ async function submitQuiz(quizId) {
   const score = Math.round((correct / questions.length) * 100);
   const passed = score >= (quiz.passing_score || 70);
 
-  // Save attempt
-  await sb.from('quiz_attempts').insert({
-    enrollment_id: state.enrollment.id,
-    quiz_id: quizId,
-    score: score,
-    passed: passed
-  });
+  // Save attempt (skip for free preview users)
+  if (!state.freeOnly) {
+    await sb.from('quiz_attempts').insert({
+      enrollment_id: state.enrollment.id,
+      quiz_id: quizId,
+      score: score,
+      passed: passed
+    });
+  }
 
   state.quizAttempts[quizId] = { score, passed };
   quizAnswers = {};
