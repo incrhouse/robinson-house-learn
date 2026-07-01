@@ -401,8 +401,17 @@ async function init() {
   const { data: enrollment } = await sb.from('enrollments').select('*')
     .eq('learner_id', learner?.id).eq('course_id', courseId).maybeSingle();
 
-  if (!enrollment) { window.location.href = '/dashboard.html'; return; }
-  state.enrollment = enrollment;
+  // Free module 1 — allow access even without enrollment
+  // If no enrollment exists, create a temporary "free" state
+  if (!enrollment) {
+    // Check if they're logged in — if so, grant free Module 1 access
+    // We create a ghost enrollment state (not saved to DB) for Module 1 only
+    state.freeOnly = true;
+    state.enrollment = { id: 'free-preview', course_id: courseId };
+  } else {
+    state.freeOnly = false;
+    state.enrollment = enrollment;
+  }
 
   const { data: course } = await sb.from('courses').select('*').eq('id', courseId).single();
   state.course = course;
@@ -694,9 +703,19 @@ function retryQuiz() {
 
 async function goNext() {
   const step = state.lessons[state.currentIndex];
+  const nextIndex = state.currentIndex + 1;
 
-  // Mark lesson complete if not already
-  if (step._type === 'lesson' && !state.progress[step.id]) {
+  // Check if free-only user is trying to go past Module 1
+  if (state.freeOnly && nextIndex < state.totalSteps) {
+    const nextStep = state.lessons[nextIndex];
+    if (nextStep && nextStep._module && nextStep._module.sort_order > 1) {
+      renderPaywall();
+      return;
+    }
+  }
+
+  // Mark lesson complete if not already (skip for free preview)
+  if (step._type === 'lesson' && !state.progress[step.id] && !state.freeOnly) {
     await sb.from('lesson_progress').upsert({
       enrollment_id: state.enrollment.id,
       lesson_id: step.id,
@@ -711,8 +730,44 @@ async function goNext() {
     renderCurrent();
     window.scrollTo(0, 0);
   } else {
-    renderCurrent(); // Will render completion if all done
+    renderCurrent();
   }
+}
+
+function renderPaywall() {
+  const courseName = state.course.title;
+  const courseSlug = state.course.slug;
+  const price = courseSlug === 'ai-unlocked' ? '$97' : '$197';
+
+  document.getElementById('bottom-nav').style.display = 'none';
+  document.getElementById('stepper').innerHTML = '';
+  document.getElementById('main-content').innerHTML = \`
+    <div style="background:var(--navy); border-radius:20px; padding:3rem 2rem; text-align:center; position:relative; overflow:hidden;">
+      <div style="position:absolute; top:-60px; right:-60px; width:200px; height:200px; border-radius:50%; background:var(--amber); opacity:0.12;"></div>
+      <div style="font-size:48px; margin-bottom:1rem;">🔓</div>
+      <div style="font-family:'Fraunces',serif; font-size:28px; font-weight:600; color:white; margin-bottom:0.75rem;">
+        Ready to unlock the full course?
+      </div>
+      <div style="font-size:15px; color:rgba(255,255,255,0.65); max-width:420px; margin:0 auto 2rem; line-height:1.6;">
+        You've completed Module 1 for free. Enroll now to access all
+        \${courseSlug === 'ai-unlocked' ? '7 modules, 25 lessons' : '9 modules, 29 lessons'},
+        quizzes, and your certificate of completion.
+      </div>
+      <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+        <a href="/enroll.html?course=\${courseSlug}"
+          style="padding:14px 32px; background:var(--amber); color:white; border-radius:10px; font-size:15px; font-weight:700; text-decoration:none;">
+          Enroll now — \${price}
+        </a>
+        <a href="/dashboard.html"
+          style="padding:14px 28px; background:transparent; color:white; border:1.5px solid rgba(255,255,255,0.3); border-radius:10px; font-size:15px; font-weight:700; text-decoration:none;">
+          Back to dashboard
+        </a>
+      </div>
+      <div style="font-size:12px; color:rgba(255,255,255,0.4); margin-top:1.5rem;">
+        Lifetime access · Certificate included · No subscription
+      </div>
+    </div>
+  \`;
 }
 
 function goLesson(dir) {
