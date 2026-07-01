@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enroll — Robinson House Learn</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Fraunces:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://www.paypal.com/sdk/js?client-id=AUsYcCZcilLm9rDIW5d84xJJ69UXSE8sUs_CSIfcEMkxEpMCUenzxHX5hE34WrdID1RreaYcm-DVzxe9&currency=USD"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --charcoal: #1C1C1E; --amber: #E8A020; --amber-light: #FDF3E0;
+    --amber-dark: #C8851A; --blue: #0066F5; --blue-light: #EAF1FF;
+    --blue-dark: #0050C2; --teal: #0F9E76; --teal-light: #E1F8F0;
+    --navy: #1A3A5C; --body: #3D3D3A; --muted: #8A8A85;
+    --soft-gray: #F5F5F3; --white: #FFFFFF; --border: #E8E8E4;
+  }
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--body); background: var(--soft-gray);
+    min-height: 100vh; -webkit-font-smoothing: antialiased;
+  }
+  nav {
+    background: var(--white); border-bottom: 1px solid var(--border);
+    padding: 0 2rem; height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .logo-mark { width: 36px; height: 36px; background: var(--blue); border-radius: 9px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 15px; }
+  .logo-name { font-size: 15px; font-weight: 600; color: var(--charcoal); }
+  .back-link { font-size: 13px; color: var(--muted); text-decoration: none; }
+  .back-link:hover { color: var(--charcoal); }
+
+  main { max-width: 960px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
+
+  /* FREE BANNER */
+  .free-banner {
+    background: var(--teal-light);
+    border: 1.5px solid rgba(15,158,118,0.2);
+    border-radius: 14px; padding: 1.25rem 1.5rem;
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 2rem;
+  }
+  .free-banner-icon { font-size: 28px; flex-shrink: 0; }
+  .free-banner-text { font-size: 15px; color: var(--teal); line-height: 1.5; }
+  .free-banner-text strong { font-weight: 700; }
+
+  /* COURSE CARDS */
+  .course-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 2.5rem; }
+  .course-card {
+    background: var(--white); border: 2px solid var(--border);
+    border-radius: 20px; padding: 2rem; cursor: pointer;
+    transition: all 0.2s; position: relative;
+  }
+  .course-card:hover { border-color: var(--blue); transform: translateY(-2px); }
+  .course-card.selected { border-color: var(--blue); background: var(--blue-light); }
+  .course-card.selected .select-indicator { background: var(--blue); border-color: var(--blue); }
+  .course-card.selected .select-indicator::after { opacity: 1; }
+  .select-indicator {
+    width: 22px; height: 22px; border-radius: 50%;
+    border: 2px solid var(--border); background: white;
+    position: absolute; top: 1.5rem; right: 1.5rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .select-indicator::after {
+    content: '✓'; color: white; font-size: 12px;
+    font-weight: 700; opacity: 0; transition: opacity 0.2s;
+  }
+  .card-badge {
+    display: inline-block; font-size: 11px; font-weight: 600;
+    padding: 4px 10px; border-radius: 40px; margin-bottom: 0.75rem;
+  }
+  .badge-amber { background: var(--amber-light); color: var(--amber-dark); }
+  .badge-navy { background: #e8f0f8; color: var(--navy); }
+  .card-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 600; color: var(--charcoal); margin-bottom: 0.5rem; }
+  .card-desc { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 1.25rem; }
+  .card-features { margin-bottom: 1.5rem; }
+  .card-feature { font-size: 13px; color: var(--body); display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .card-feature::before { content: '✓'; color: var(--teal); font-weight: 700; font-size: 11px; flex-shrink: 0; }
+  .card-price-row { display: flex; align-items: baseline; gap: 8px; }
+  .card-price { font-family: 'Fraunces', serif; font-size: 36px; font-weight: 600; color: var(--charcoal); }
+  .card-price-sub { font-size: 13px; color: var(--muted); }
+  .free-tag {
+    display: inline-block; background: var(--teal-light); color: var(--teal);
+    font-size: 12px; font-weight: 600; padding: 3px 10px;
+    border-radius: 20px; margin-top: 6px;
+  }
+
+  /* PAYMENT SECTION */
+  .payment-section {
+    background: var(--white); border: 1.5px solid var(--border);
+    border-radius: 20px; padding: 2rem;
+  }
+  .payment-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;
+  }
+  .payment-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 600; color: var(--charcoal); }
+  .order-summary {
+    background: var(--soft-gray); border-radius: 12px;
+    padding: 1.25rem; margin-bottom: 1.5rem;
+  }
+  .order-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: var(--body); margin-bottom: 8px; }
+  .order-row:last-child { margin-bottom: 0; padding-top: 8px; border-top: 1px solid var(--border); font-weight: 700; font-size: 16px; }
+  .order-free { color: var(--teal); font-weight: 600; font-size: 12px; }
+  #paypal-button-container { min-height: 50px; }
+  .payment-note { font-size: 12px; color: var(--muted); text-align: center; margin-top: 1rem; line-height: 1.5; }
+  .payment-note a { color: var(--blue); }
+
+  /* STATES */
+  .no-selection { text-align: center; padding: 2rem; color: var(--muted); font-size: 14px; }
+  .loading { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 2rem; color: var(--muted); font-size: 14px; }
+  .spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .success-card {
+    background: var(--teal-light); border: 1.5px solid rgba(15,158,118,0.2);
+    border-radius: 20px; padding: 3rem 2rem; text-align: center;
+  }
+  .success-icon { font-size: 56px; margin-bottom: 1rem; }
+  .success-title { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 600; color: var(--charcoal); margin-bottom: 0.75rem; }
+  .success-sub { font-size: 15px; color: var(--muted); margin-bottom: 2rem; line-height: 1.6; max-width: 440px; margin-left: auto; margin-right: auto; }
+  .btn-dashboard { display: inline-block; padding: 14px 32px; background: var(--blue); color: white; border-radius: 10px; font-size: 15px; font-weight: 700; text-decoration: none; transition: background 0.15s; }
+  .btn-dashboard:hover { background: var(--blue-dark); }
+
+  @media (max-width: 640px) {
+    .course-grid { grid-template-columns: 1fr; }
+    main { padding: 1.5rem 1rem 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">
+    <div class="logo-mark">R</div>
+    <span class="logo-name">Robinson House Learn</span>
+  </a>
+  <a href="/dashboard.html" class="back-link">← Back to dashboard</a>
+</nav>
+
+<main>
+
+  <div class="free-banner">
+    <div class="free-banner-icon">🎁</div>
+    <div class="free-banner-text">
+      <strong>Module 1 is always free.</strong> Sign up, explore the first module of any course at no cost — then decide if you want to unlock the rest.
+    </div>
+  </div>
+
+  <!-- COURSE SELECTION -->
+  <div class="course-grid" id="course-grid">
+
+    <div class="course-card" onclick="selectCourse('ai-unlocked', 97)" id="card-unlocked">
+      <div class="select-indicator" id="indicator-unlocked"></div>
+      <span class="card-badge badge-amber">Public Workforce</span>
+      <div class="card-title">AI Unlocked</div>
+      <div class="card-desc">Foundational AI literacy for career changers, community members, and curious professionals. Self-paced, no coding required.</div>
+      <div class="card-features">
+        <div class="card-feature">7 modules · 25 lessons</div>
+        <div class="card-feature">Module 1 free, no credit card</div>
+        <div class="card-feature">Certificate of Foundational AI Competency</div>
+        <div class="card-feature">Lifetime access</div>
+      </div>
+      <div class="card-price-row">
+        <div class="card-price">$97</div>
+        <div class="card-price-sub">full access · one-time</div>
+      </div>
+      <div class="free-tag">✦ Module 1 always free</div>
+    </div>
+
+    <div class="course-card" onclick="selectCourse('ai-ready', 197)" id="card-ready">
+      <div class="select-indicator" id="indicator-ready"></div>
+      <span class="card-badge badge-navy">Higher Ed / Corporate</span>
+      <div class="card-title">AI Ready</div>
+      <div class="card-desc">Professional AI automation for community colleges, employers, and career professionals. Includes 3 CEUs and a graduation portfolio.</div>
+      <div class="card-features">
+        <div class="card-feature">9 modules · 29 lessons</div>
+        <div class="card-feature">Module 1 free, no credit card</div>
+        <div class="card-feature">3 CEUs · AI Ready Certificate</div>
+        <div class="card-feature">Graduation portfolio</div>
+      </div>
+      <div class="card-price-row">
+        <div class="card-price">$197</div>
+        <div class="card-price-sub">full access · one-time</div>
+      </div>
+      <div class="free-tag">✦ Module 1 always free</div>
+    </div>
+
+  </div>
+
+  <!-- PAYMENT -->
+  <div class="payment-section" id="payment-section">
+
+    <div class="no-selection" id="no-selection">
+      Select a course above to continue
+    </div>
+
+    <div id="payment-content" style="display:none;">
+      <div class="payment-header">
+        <div class="payment-title">Complete your enrollment</div>
+      </div>
+
+      <div class="order-summary" id="order-summary">
+        <div class="order-row">
+          <span id="order-course-name">—</span>
+          <span id="order-module1">
+            <span class="order-free">Module 1 FREE</span>
+          </span>
+        </div>
+        <div class="order-row">
+          <span>Full course access</span>
+          <span id="order-price">—</span>
+        </div>
+        <div class="order-row">
+          <span>Total today</span>
+          <span id="order-total">—</span>
+        </div>
+      </div>
+
+      <div id="paypal-button-container"></div>
+
+      <div class="payment-note">
+        Secure checkout powered by PayPal · No PayPal account required<br>
+        By enrolling you agree to Robinson House Learn's
+        <a href="mailto:cleveland@incrhouse.com">terms of enrollment</a>.
+        Questions? Email <a href="mailto:cleveland@incrhouse.com">cleveland@incrhouse.com</a>
+      </div>
+    </div>
+
+    <div id="payment-loading" style="display:none;">
+      <div class="loading">
+        <div class="spinner"></div>
+        Processing your enrollment...
+      </div>
+    </div>
+
+  </div>
+
+  <div id="success-section" style="display:none;">
+    <div class="success-card">
+      <div class="success-icon">🎓</div>
+      <div class="success-title" id="success-title">You're enrolled!</div>
+      <div class="success-sub" id="success-sub">Your course is ready. Head to your dashboard to start learning.</div>
+      <a href="/dashboard.html" class="btn-dashboard">Go to my dashboard →</a>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  const SUPABASE_URL = 'https://hinsbtiahzgccnjyovvc.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhpbnNidGlhaHpnY2NuanlvdnZjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MjM0MjQsImV4cCI6MjA5ODM5OTQyNH0.aza9Xin6Qa3qAncGVl3P1TLGstKpA83Bqs8DywBoGyw';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  let selectedCourse = null;
+  let selectedPrice = null;
+  let currentLearner = null;
+  let paypalRendered = false;
+
+  // Check auth on load
+  async function init() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) {
+      window.location.href = '/login.html';
+      return;
+    }
+    const { data: learner } = await sb
+      .from('learners')
+      .select('*')
+      .eq('auth_user_id', session.user.id)
+      .maybeSingle();
+    currentLearner = learner;
+
+    // Check if already enrolled — redirect to dashboard
+    if (learner) {
+      const { data: enrollments } = await sb
+        .from('enrollments')
+        .select('id')
+        .eq('learner_id', learner.id);
+      if (enrollments && enrollments.length > 0) {
+        window.location.href = '/dashboard.html';
+        return;
+      }
+    }
+
+    // Check URL params for pre-selected course
+    const params = new URLSearchParams(window.location.search);
+    const courseParam = params.get('course');
+    if (courseParam === 'ai-unlocked') selectCourse('ai-unlocked', 97);
+    if (courseParam === 'ai-ready') selectCourse('ai-ready', 197);
+  }
+
+  function selectCourse(slug, price) {
+    selectedCourse = slug;
+    selectedPrice = price;
+
+    // Update card UI
+    document.querySelectorAll('.course-card').forEach(c => c.classList.remove('selected'));
+    document.querySelectorAll('.select-indicator').forEach(i => i.classList.remove('selected'));
+
+    const cardId = slug === 'ai-unlocked' ? 'card-unlocked' : 'card-ready';
+    const indicatorId = slug === 'ai-unlocked' ? 'indicator-unlocked' : 'indicator-ready';
+    document.getElementById(cardId).classList.add('selected');
+    document.getElementById(indicatorId).classList.add('selected');
+
+    // Update order summary
+    const courseName = slug === 'ai-unlocked' ? 'AI Unlocked' : 'AI Ready';
+    document.getElementById('order-course-name').textContent = courseName;
+    document.getElementById('order-price').textContent = '$' + price;
+    document.getElementById('order-total').textContent = '$' + price;
+
+    // Show payment section
+    document.getElementById('no-selection').style.display = 'none';
+    document.getElementById('payment-content').style.display = 'block';
+
+    // Render PayPal button
+    if (!paypalRendered) {
+      renderPayPal();
+      paypalRendered = true;
+    }
+  }
+
+  function renderPayPal() {
+    paypal.Buttons({
+      style: {
+        layout: 'vertical',
+        color: 'blue',
+        shape: 'rect',
+        label: 'pay',
+        height: 48
+      },
+
+      createOrder: function(data, actions) {
+        const courseName = selectedCourse === 'ai-unlocked' ? 'AI Unlocked — Full Access' : 'AI Ready — Full Access';
+        return actions.order.create({
+          purchase_units: [{
+            amount: {
+              value: selectedPrice.toString(),
+              currency_code: 'USD'
+            },
+            description: 'Robinson House Learn — ' + courseName,
+            payee: {
+              email_address: 'cleveland@incrhouse.com'
+            }
+          }]
+        });
+      },
+
+      onApprove: async function(data, actions) {
+        document.getElementById('payment-content').style.display = 'none';
+        document.getElementById('payment-loading').style.display = 'block';
+
+        try {
+          const order = await actions.order.capture();
+
+          // Get the course record
+          const { data: course } = await sb
+            .from('courses')
+            .select('id, title')
+            .eq('slug', selectedCourse)
+            .single();
+
+          if (!course || !currentLearner) throw new Error('Missing course or learner data');
+
+          // Create enrollment
+          const { error: enrollErr } = await sb
+            .from('enrollments')
+            .insert({
+              learner_id: currentLearner.id,
+              course_id: course.id,
+              enrollment_type: 'individual',
+              stripe_payment_id: order.id  // reusing field for PayPal order ID
+            });
+
+          if (enrollErr) throw enrollErr;
+
+          // Show success
+          document.getElementById('payment-loading').style.display = 'none';
+          document.getElementById('payment-section').style.display = 'none';
+          document.getElementById('course-grid').style.display = 'none';
+          document.querySelector('.free-banner').style.display = 'none';
+          document.getElementById('success-section').style.display = 'block';
+          document.getElementById('success-title').textContent = 'You\'re enrolled in ' + course.title + '!';
+          document.getElementById('success-sub').textContent = 'Your first module is waiting. Head to your dashboard to start learning — Module 1 is already unlocked.';
+
+        } catch (err) {
+          console.error('Enrollment error:', err);
+          document.getElementById('payment-loading').style.display = 'none';
+          document.getElementById('payment-content').style.display = 'block';
+          alert('Payment was received but enrollment had an issue. Please contact cleveland@incrhouse.com with your PayPal confirmation and we\'ll get you enrolled right away.');
+        }
+      },
+
+      onError: function(err) {
+        console.error('PayPal error:', err);
+        alert('Payment could not be completed. Please try again or contact cleveland@incrhouse.com for help.');
+      },
+
+      onCancel: function() {
+        // Just let them stay on the page — no action needed
+      }
+
+    }).render('#paypal-button-container');
+  }
+
+  init();
+</script>
+
+</body>
+</html>
