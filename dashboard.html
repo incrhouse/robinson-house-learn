@@ -477,6 +477,7 @@
             <div class="catalog-desc">${course.description}</div>
             <div class="catalog-meta">
               <span class="meta-tag">⏱ Self-paced</span>
+              <span class="meta-tag" style="color:var(--teal); font-weight:600;">🎁 Module 1 free</span>
               <span class="meta-tag">🎓 Certificate</span>
               <span class="meta-tag">${isUnlocked ? '6 modules' : '7 modules · 3 CEUs'}</span>
             </div>
@@ -484,7 +485,7 @@
               ${isUnlocked ? '$297' : '$497'}
               <span>/ one-time · lifetime access</span>
             </div>
-            <a href="mailto:cleveland@incrhouse.com?subject=Enrollment inquiry: ${course.title}&body=Hi Dr. Cleve, I would like to enroll in ${course.title}. Please send me payment details." class="btn-enroll">
+            <a href="/enroll.html?course=${course.slug}" class="btn-enroll">
               Enroll in ${course.title} →
             </a>
           </div>
