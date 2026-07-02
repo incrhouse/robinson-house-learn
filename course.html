@@ -357,7 +357,7 @@ async function submitQuiz(quizId) {
   let correct = 0;
   qs.forEach(q => { if (quizAnswers[q.id]?.correct) correct++; });
   const score = Math.round((correct / qs.length) * 100);
-  const passed = score >= (step.data.passing_score || 70);
+  const passed = score >= 100;
 
   // Style options
   qs.forEach(q => {
@@ -404,7 +404,15 @@ function showResult(score, passed) {
   </div>`;
 }
 
-function retryQuiz() { quizAnswers = {}; render(); }
+function retryQuiz() {
+  const step = S.steps[S.idx];
+  if (step.type === 'quiz') {
+    // Remove the local attempt so the quiz renders fresh
+    delete S.attempts[step.data.id];
+  }
+  quizAnswers = {};
+  render();
+}
 
 async function goNext() {
   const step = S.steps[S.idx];
