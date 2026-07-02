@@ -9,329 +9,83 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --charcoal: #1C1C1E;
-    --amber: #E8A020;
-    --amber-light: #FDF3E0;
-    --amber-dark: #C8851A;
-    --blue: #0066F5;
-    --blue-light: #EAF1FF;
-    --blue-dark: #0050C2;
-    --teal: #0F9E76;
-    --teal-light: #E1F8F0;
-    --navy: #1A3A5C;
-    --body: #3D3D3A;
-    --muted: #8A8A85;
-    --soft-gray: #F5F5F3;
-    --white: #FFFFFF;
-    --border: #E8E8E4;
-    --red: #C0392B;
+    --charcoal: #1C1C1E; --amber: #E8A020; --amber-light: #FDF3E0;
+    --amber-dark: #C8851A; --blue: #0066F5; --blue-light: #EAF1FF;
+    --blue-dark: #0050C2; --teal: #0F9E76; --teal-light: #E1F8F0;
+    --navy: #1A3A5C; --body: #3D3D3A; --muted: #8A8A85;
+    --soft-gray: #F5F5F3; --white: #FFFFFF; --border: #E8E8E4; --red: #C0392B;
   }
-  body {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    color: var(--body);
-    background: var(--soft-gray);
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  /* TOP NAV */
-  .top-nav {
-    background: var(--white);
-    border-bottom: 1px solid var(--border);
-    padding: 0 2rem;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 20;
-  }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; color: var(--body); background: var(--soft-gray); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+  .top-nav { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 2rem; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 20; }
   .nav-left { display: flex; align-items: center; gap: 12px; }
-  .back-btn {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 13px; font-weight: 500; color: var(--muted);
-    text-decoration: none; transition: color 0.15s;
-  }
+  .back-btn { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--muted); text-decoration: none; }
   .back-btn:hover { color: var(--charcoal); }
   .nav-divider { color: var(--border); font-size: 18px; }
-  .course-title-nav {
-    font-size: 14px; font-weight: 600; color: var(--charcoal);
-  }
+  .course-title-nav { font-size: 14px; font-weight: 600; color: var(--charcoal); }
   .nav-progress-wrap { display: flex; align-items: center; gap: 10px; }
-  .nav-progress-bar {
-    width: 160px; height: 6px;
-    background: var(--border); border-radius: 4px; overflow: hidden;
-  }
-  .nav-progress-fill {
-    height: 100%; background: var(--blue);
-    border-radius: 4px; transition: width 0.4s ease;
-  }
+  .nav-progress-bar { width: 160px; height: 6px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .nav-progress-fill { height: 100%; background: var(--blue); border-radius: 4px; transition: width 0.4s ease; }
   .nav-progress-label { font-size: 12px; color: var(--muted); }
-
-  /* PROGRESS STEPPER */
-  .stepper {
-    background: var(--white);
-    border-bottom: 1px solid var(--border);
-    padding: 0 2rem;
-    overflow-x: auto;
-    display: flex;
-    gap: 0;
-    scrollbar-width: none;
-  }
+  .stepper { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 2rem; overflow-x: auto; display: flex; scrollbar-width: none; }
   .stepper::-webkit-scrollbar { display: none; }
-  .step {
-    display: flex; align-items: center; gap: 8px;
-    padding: 14px 16px;
-    font-size: 12px; font-weight: 500;
-    color: var(--muted);
-    white-space: nowrap;
-    border-bottom: 2px solid transparent;
-    cursor: default;
-    flex-shrink: 0;
-  }
+  .step { display: flex; align-items: center; gap: 8px; padding: 14px 16px; font-size: 12px; font-weight: 500; color: var(--muted); white-space: nowrap; border-bottom: 2px solid transparent; flex-shrink: 0; }
   .step.completed { color: var(--teal); }
   .step.active { color: var(--blue); border-bottom-color: var(--blue); }
-  .step-num {
-    width: 22px; height: 22px;
-    border-radius: 50%;
-    background: var(--soft-gray);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 700;
-    flex-shrink: 0;
-  }
+  .step-num { width: 22px; height: 22px; border-radius: 50%; background: var(--soft-gray); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
   .step.completed .step-num { background: var(--teal-light); color: var(--teal); }
   .step.active .step-num { background: var(--blue-light); color: var(--blue); }
-
-  /* MAIN CONTENT */
-  main {
-    max-width: 780px;
-    margin: 0 auto;
-    padding: 2.5rem 2rem 6rem;
-  }
-
-  /* MODULE LABEL */
-  .module-label {
-    font-size: 11px; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--amber-dark);
-    font-weight: 600; margin-bottom: 0.5rem;
-  }
-
-  /* LESSON HEADER */
-  .lesson-header {
-    margin-bottom: 2rem;
-  }
-  .lesson-title {
-    font-family: 'Fraunces', serif;
-    font-size: 32px; font-weight: 600;
-    color: var(--charcoal); line-height: 1.2;
-    margin-bottom: 0.5rem;
-  }
-  .lesson-meta { font-size: 13px; color: var(--muted); }
-
-  /* VIDEO */
-  .video-wrap {
-    background: var(--charcoal);
-    border-radius: 16px;
-    overflow: hidden;
-    margin-bottom: 2rem;
-    aspect-ratio: 16/9;
-    display: flex; align-items: center; justify-content: center;
-    position: relative;
-  }
-  .video-wrap iframe {
-    width: 100%; height: 100%;
-    border: none;
-  }
-  .video-placeholder {
-    display: flex; flex-direction: column;
-    align-items: center; gap: 12px;
-    color: rgba(255,255,255,0.4);
-    font-size: 14px; text-align: center; padding: 2rem;
-  }
-  .video-placeholder-icon { font-size: 48px; }
-
-  /* LESSON CONTENT */
-  .lesson-content {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    line-height: 1.75;
-    font-size: 16px;
-    color: var(--body);
-  }
-  .lesson-content h3 {
-    font-family: 'Fraunces', serif;
-    font-size: 20px; font-weight: 600;
-    color: var(--charcoal); margin: 1.5rem 0 0.5rem;
-  }
-  .lesson-content h3:first-child { margin-top: 0; }
-  .lesson-content p { margin-bottom: 1rem; }
-  .lesson-content p:last-child { margin-bottom: 0; }
-
-  /* ACTIVITY BOX */
-  .activity-box {
-    background: var(--amber-light);
-    border: 1.5px solid rgba(232,160,32,0.25);
-    border-radius: 16px;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-  }
-  .activity-eyebrow {
-    font-size: 11px; letter-spacing: 0.08em;
-    text-transform: uppercase; color: var(--amber-dark);
-    font-weight: 600; margin-bottom: 0.5rem;
-  }
-  .activity-title {
-    font-family: 'Fraunces', serif;
-    font-size: 17px; font-weight: 600;
-    color: var(--charcoal); margin-bottom: 0.5rem;
-  }
+  main { max-width: 780px; margin: 0 auto; padding: 2.5rem 2rem 6rem; }
+  .module-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber-dark); font-weight: 600; margin-bottom: 0.5rem; }
+  .lesson-title { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 600; color: var(--charcoal); line-height: 1.2; margin-bottom: 0.5rem; }
+  .lesson-meta { font-size: 13px; color: var(--muted); margin-bottom: 2rem; }
+  .video-wrap { background: var(--charcoal); border-radius: 16px; overflow: hidden; margin-bottom: 2rem; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; }
+  .video-wrap iframe { width: 100%; height: 100%; border: none; }
+  .video-placeholder { display: flex; flex-direction: column; align-items: center; gap: 12px; color: rgba(255,255,255,0.4); font-size: 14px; text-align: center; padding: 2rem; }
+  .lesson-content { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; margin-bottom: 2rem; line-height: 1.75; font-size: 16px; }
+  .activity-box { background: var(--amber-light); border: 1.5px solid rgba(232,160,32,0.25); border-radius: 16px; padding: 1.5rem; margin-bottom: 2rem; }
+  .activity-eyebrow { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--amber-dark); font-weight: 600; margin-bottom: 0.5rem; }
+  .activity-title { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 600; color: var(--charcoal); margin-bottom: 0.5rem; }
   .activity-body { font-size: 14px; color: var(--body); line-height: 1.65; }
-
-  /* BOTTOM NAV */
-  .bottom-nav {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    background: var(--white);
-    border-top: 1px solid var(--border);
-    padding: 1rem 2rem;
-    display: flex; align-items: center; justify-content: space-between;
-    z-index: 20;
-  }
-  .btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 12px 24px; border-radius: 10px;
-    font-size: 14px; font-weight: 600;
-    cursor: pointer; border: none; text-decoration: none;
-    transition: all 0.15s; font-family: 'Plus Jakarta Sans', sans-serif;
-  }
+  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); border-top: 1px solid var(--border); padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; z-index: 20; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; text-decoration: none; transition: all 0.15s; font-family: 'Plus Jakarta Sans', sans-serif; }
   .btn-primary { background: var(--blue); color: white; }
   .btn-primary:hover { background: var(--blue-dark); }
-  .btn-secondary {
-    background: transparent; color: var(--muted);
-    border: 1.5px solid var(--border);
-  }
+  .btn-secondary { background: transparent; color: var(--muted); border: 1.5px solid var(--border); }
   .btn-secondary:hover { border-color: var(--charcoal); color: var(--charcoal); }
-  .btn-success { background: var(--teal); color: white; }
-  .btn-success:hover { background: #0A7A5A; }
   .lesson-position { font-size: 13px; color: var(--muted); text-align: center; }
-
-  /* QUIZ */
-  .quiz-wrap {
-    background: var(--white);
-    border: 1.5px solid var(--border);
-    border-radius: 20px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-  }
-  .quiz-eyebrow {
-    font-size: 11px; letter-spacing: 0.08em;
-    text-transform: uppercase; color: var(--blue);
-    font-weight: 600; margin-bottom: 0.75rem;
-  }
-  .quiz-title {
-    font-family: 'Fraunces', serif;
-    font-size: 22px; font-weight: 600;
-    color: var(--charcoal); margin-bottom: 0.5rem;
-  }
+  .quiz-wrap { background: var(--white); border: 1.5px solid var(--border); border-radius: 20px; padding: 2rem; margin-bottom: 2rem; }
+  .quiz-eyebrow { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--blue); font-weight: 600; margin-bottom: 0.75rem; }
+  .quiz-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 600; color: var(--charcoal); margin-bottom: 0.5rem; }
   .quiz-sub { font-size: 14px; color: var(--muted); margin-bottom: 1.75rem; }
   .question-block { margin-bottom: 1.75rem; }
-  .question-text {
-    font-size: 16px; font-weight: 600;
-    color: var(--charcoal); margin-bottom: 0.75rem;
-    line-height: 1.45;
-  }
-  .question-num {
-    font-size: 11px; color: var(--muted);
-    text-transform: uppercase; letter-spacing: 0.06em;
-    margin-bottom: 4px; font-weight: 600;
-  }
-  .option {
-    display: flex; align-items: center; gap: 10px;
-    padding: 12px 14px;
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    margin-bottom: 8px;
-    cursor: pointer;
-    transition: all 0.15s;
-    font-size: 14px;
-    background: var(--white);
-    width: 100%;
-    text-align: left;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    color: var(--body);
-  }
+  .question-num { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; font-weight: 600; }
+  .question-text { font-size: 16px; font-weight: 600; color: var(--charcoal); margin-bottom: 0.75rem; line-height: 1.45; }
+  .option { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 10px; margin-bottom: 8px; cursor: pointer; transition: all 0.15s; font-size: 14px; background: var(--white); width: 100%; text-align: left; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--body); }
   .option:hover { border-color: var(--blue); background: var(--blue-light); }
   .option.selected { border-color: var(--blue); background: var(--blue-light); color: var(--blue); font-weight: 500; }
   .option.correct { border-color: var(--teal); background: var(--teal-light); color: var(--teal); font-weight: 500; }
   .option.incorrect { border-color: var(--red); background: #FBEAEA; color: var(--red); font-weight: 500; }
-  .option-letter {
-    width: 26px; height: 26px;
-    border-radius: 6px; background: var(--soft-gray);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 700;
-    flex-shrink: 0;
-  }
-  .quiz-result {
-    border-radius: 12px; padding: 1.25rem;
-    text-align: center; margin-top: 1rem;
-  }
+  .option-letter { width: 26px; height: 26px; border-radius: 6px; background: var(--soft-gray); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .quiz-result { border-radius: 12px; padding: 1.25rem; text-align: center; margin-top: 1rem; }
   .quiz-result.pass { background: var(--teal-light); color: var(--teal); }
   .quiz-result.fail { background: #FBEAEA; color: var(--red); }
   .quiz-result-score { font-family: 'Fraunces', serif; font-size: 36px; font-weight: 600; line-height: 1; }
   .quiz-result-msg { font-size: 14px; margin-top: 4px; }
-
-  /* COMPLETION */
-  .completion-card {
-    background: var(--navy);
-    border-radius: 20px; padding: 3rem 2rem;
-    text-align: center; color: white;
-    position: relative; overflow: hidden;
-  }
-  .completion-blob {
-    position: absolute; top: -60px; right: -60px;
-    width: 200px; height: 200px; border-radius: 50%;
-    background: var(--amber); opacity: 0.12;
-  }
+  .completion-card { background: var(--navy); border-radius: 20px; padding: 3rem 2rem; text-align: center; color: white; position: relative; overflow: hidden; }
+  .completion-blob { position: absolute; top: -60px; right: -60px; width: 200px; height: 200px; border-radius: 50%; background: var(--amber); opacity: 0.12; }
   .completion-icon { font-size: 56px; margin-bottom: 1rem; }
-  .completion-title {
-    font-family: 'Fraunces', serif;
-    font-size: 28px; font-weight: 600;
-    color: white; margin-bottom: 0.75rem;
-  }
+  .completion-title { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 600; color: white; margin-bottom: 0.75rem; }
   .completion-title em { font-style: italic; color: var(--amber); }
-  .completion-sub {
-    font-size: 15px; color: rgba(255,255,255,0.65);
-    max-width: 440px; margin: 0 auto 1.75rem; line-height: 1.6;
-  }
-
-  /* LOADING */
-  .loading {
-    display: flex; align-items: center; justify-content: center;
-    min-height: 60vh; gap: 10px; color: var(--muted); font-size: 14px;
-  }
-  .spinner {
-    width: 22px; height: 22px;
-    border: 2px solid var(--border);
-    border-top-color: var(--blue);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite; flex-shrink: 0;
-  }
+  .completion-sub { font-size: 15px; color: rgba(255,255,255,0.65); max-width: 440px; margin: 0 auto 1.75rem; line-height: 1.6; }
+  #status { padding: 2rem; text-align: center; font-size: 14px; color: var(--muted); }
+  #error-box { background: #FBEAEA; color: var(--red); border-radius: 12px; padding: 1.25rem; margin: 1rem 2rem; font-size: 13px; display: none; }
+  .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 8px; }
   @keyframes spin { to { transform: rotate(360deg); } }
-
-  @media (max-width: 640px) {
-    .lesson-title { font-size: 24px; }
-    main { padding: 1.5rem 1rem 5rem; }
-    .top-nav { padding: 0 1rem; }
-    .nav-progress-wrap { display: none; }
-  }
+  @media (max-width: 640px) { .lesson-title { font-size: 24px; } main { padding: 1.5rem 1rem 5rem; } .top-nav { padding: 0 1rem; } .nav-progress-wrap { display: none; } }
 </style>
 </head>
 <body>
 
-<!-- TOP NAV -->
 <nav class="top-nav">
   <div class="nav-left">
     <a href="/dashboard.html" class="back-btn">← Dashboard</a>
@@ -339,499 +93,397 @@
     <span class="course-title-nav" id="nav-course-title">Loading...</span>
   </div>
   <div class="nav-progress-wrap">
-    <div class="nav-progress-bar">
-      <div class="nav-progress-fill" id="nav-progress-fill" style="width:0%"></div>
-    </div>
+    <div class="nav-progress-bar"><div class="nav-progress-fill" id="nav-progress-fill" style="width:0%"></div></div>
     <span class="nav-progress-label" id="nav-progress-label">0%</span>
   </div>
 </nav>
 
-<!-- STEPPER -->
 <div class="stepper" id="stepper"></div>
+<div id="error-box"></div>
 
-<!-- MAIN -->
 <main id="main-content">
-  <div class="loading">
-    <div class="spinner"></div>
-    Loading your course...
-  </div>
+  <div id="status"><span class="spinner"></span>Loading your course...</div>
 </main>
 
-<!-- BOTTOM NAV -->
 <div class="bottom-nav" id="bottom-nav" style="display:none;">
-  <button class="btn btn-secondary" id="btn-prev" onclick="goLesson(-1)">← Previous</button>
+  <button class="btn btn-secondary" id="btn-prev" onclick="go(-1)">← Previous</button>
   <div class="lesson-position" id="lesson-position"></div>
   <button class="btn btn-primary" id="btn-next" onclick="goNext()">Next →</button>
 </div>
 
 <script>
-const SUPABASE_URL = 'https://hinsbtiahzgccnjyovvc.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhpbnNidGlhaHpnY2NuanlvdnZjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MjM0MjQsImV4cCI6MjA5ODM5OTQyNH0.aza9Xin6Qa3qAncGVl3P1TLGstKpA83Bqs8DywBoGyw';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const SB_URL = 'https://hinsbtiahzgccnjyovvc.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhpbnNidGlhaHpnY2NuanlvdnZjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MjM0MjQsImV4cCI6MjA5ODM5OTQyNH0.aza9Xin6Qa3qAncGVl3P1TLGstKpA83Bqs8DywBoGyw';
+const sb = supabase.createClient(SB_URL, SB_KEY);
+const courseId = new URLSearchParams(window.location.search).get('id');
 
-// State
-let state = {
-  session: null,
-  learner: null,
+// ── App state ──────────────────────────────────────────────
+let S = {
+  freeOnly: false,
   enrollment: null,
   course: null,
   modules: [],
-  lessons: [],       // flat list: [{...lesson, module, isQuiz}]
-  quizzes: {},       // moduleId -> quiz with questions
-  progress: {},      // lessonId -> true/false
-  quizAttempts: {},  // quizId -> {score, passed}
-  currentIndex: 0,
-  totalSteps: 0
+  steps: [],      // flat [{type:'lesson'|'quiz', data, module}]
+  progress: {},   // lessonId → true
+  attempts: {},   // quizId → {score, passed}
+  idx: 0,
+  learner: null
 };
+let quizAnswers = {};
 
-const params = new URLSearchParams(window.location.search);
-const courseId = params.get('id');
-
-function dbg(msg) {
-  console.log('[course]', msg);
-  const el = document.getElementById('debug-log');
-  if (el) { el.style.display = 'block'; el.innerHTML += msg + '<br>'; }
+// ── Error helper ───────────────────────────────────────────
+function showError(msg) {
+  const box = document.getElementById('error-box');
+  box.textContent = '⚠ ' + msg;
+  box.style.display = 'block';
+  document.getElementById('status').style.display = 'none';
 }
 
-async function init() {
-  dbg('init started, courseId=' + courseId);
-  if (!courseId) { window.location.href = '/dashboard.html'; return; }
+// ── Boot ───────────────────────────────────────────────────
+async function boot() {
+  if (!courseId) { location.href = '/dashboard.html'; return; }
 
-  const { data: { session }, error: sessErr } = await sb.auth.getSession();
-  dbg('session check: ' + (session ? 'found' : 'none') + (sessErr ? ' err:' + sessErr.message : ''));
-  if (!session) { window.location.href = '/login.html'; return; }
-  state.session = session;
+  // 1. Auth
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { location.href = '/login.html'; return; }
 
-  const { data: learner } = await sb.from('learners').select('*')
-    .eq('auth_user_id', session.user.id).maybeSingle();
-  state.learner = learner;
+  // 2. Learner
+  const { data: learner } = await sb.from('learners')
+    .select('*').eq('auth_user_id', session.user.id).maybeSingle();
+  S.learner = learner;
 
-  const { data: enrollment } = await sb.from('enrollments').select('*')
-    .eq('learner_id', learner?.id).eq('course_id', courseId).maybeSingle();
-
-  // Free module 1 — allow access even without enrollment
-  // If no enrollment exists, create a temporary "free" state
-  if (!enrollment) {
-    // Check if they're logged in — if so, grant free Module 1 access
-    // We create a ghost enrollment state (not saved to DB) for Module 1 only
-    state.freeOnly = true;
-    state.enrollment = { id: 'free-preview', course_id: courseId };
-  } else {
-    state.freeOnly = false;
-    state.enrollment = enrollment;
+  // 3. Enrollment check
+  let enrollment = null;
+  if (learner) {
+    const { data: e } = await sb.from('enrollments')
+      .select('*').eq('learner_id', learner.id).eq('course_id', courseId).maybeSingle();
+    enrollment = e;
   }
+  S.freeOnly = !enrollment;
+  S.enrollment = enrollment;
 
-  const { data: course } = await sb.from('courses').select('*').eq('id', courseId).single();
-  state.course = course;
+  // 4. Course
+  const { data: course, error: cErr } = await sb.from('courses')
+    .select('*').eq('id', courseId).maybeSingle();
+  if (cErr || !course) { showError('Course not found. ' + (cErr?.message || '')); return; }
+  S.course = course;
   document.title = course.title + ' — Robinson House Learn';
   document.getElementById('nav-course-title').textContent = course.title;
 
-  const { data: modules, error: modErr } = await sb.from('modules').select('*')
-    .eq('course_id', courseId).order('sort_order');
-  dbg('modules: ' + (modules ? modules.length : 0) + (modErr ? ' err:'+modErr.message : ''));
-  state.modules = modules;
+  // 5. Modules
+  const { data: modules, error: mErr } = await sb.from('modules')
+    .select('*').eq('course_id', courseId).order('sort_order');
+  if (mErr || !modules?.length) { showError('Could not load modules. ' + (mErr?.message || '')); return; }
+  S.modules = modules;
 
-  // Fetch lessons via module IDs (avoids RLS join issue for unenrolled users)
-  const moduleIds = modules.map(m => m.id);
-  dbg('fetching lessons for moduleIds: ' + moduleIds.length);
-  const { data: allLessons, error: lessonErr } = await sb.from('lessons').select('*, module_id')
-    .in('module_id', moduleIds).order('sort_order');
-  dbg('lessons: ' + (allLessons ? allLessons.length : 0) + (lessonErr ? ' err:'+lessonErr.message : ''));
-  // Attach module info manually
-  const moduleMap = {};
-  modules.forEach(m => { moduleMap[m.id] = m; });
-  allLessons?.forEach(l => { l.modules = moduleMap[l.module_id]; });
+  // 6. Lessons (simple .in() query — no join)
+  const mIds = modules.map(m => m.id);
+  const { data: lessons, error: lErr } = await sb.from('lessons')
+    .select('*').in('module_id', mIds).order('sort_order');
+  if (lErr) { showError('Could not load lessons. ' + lErr.message); return; }
 
-  const { data: quizList } = await sb.from('quizzes').select('*, quiz_questions(*, quiz_options(*))')
-    .in('module_id', modules.map(m => m.id));
+  // Build a module lookup
+  const modById = {};
+  modules.forEach(m => { modById[m.id] = m; });
 
-  quizList?.forEach(q => { state.quizzes[q.module_id] = q; });
+  // 7. Quizzes
+  const { data: quizzes } = await sb.from('quizzes')
+    .select('*, quiz_questions(*, quiz_options(*))').in('module_id', mIds);
+  const quizByMod = {};
+  (quizzes || []).forEach(q => { quizByMod[q.module_id] = q; });
 
-  // Build flat lesson list: lessons + quiz placeholder after each module
-  const flat = [];
+  // 8. Build flat step list
+  const steps = [];
   for (const mod of modules) {
-    const modLessons = allLessons.filter(l => l.modules.id === mod.id);
-    modLessons.forEach(l => flat.push({ ...l, _module: mod, _type: 'lesson' }));
-    if (state.quizzes[mod.id]) {
-      flat.push({ id: 'quiz-' + mod.id, _module: mod, _type: 'quiz',
-                  quiz: state.quizzes[mod.id], title: mod.title + ' — Check Your Knowledge' });
+    const modLessons = (lessons || []).filter(l => l.module_id === mod.id);
+    for (const l of modLessons) {
+      steps.push({ type: 'lesson', data: l, module: mod });
+    }
+    if (quizByMod[mod.id]) {
+      steps.push({ type: 'quiz', data: quizByMod[mod.id], module: mod });
     }
   }
-  state.lessons = flat;
-  state.totalSteps = flat.length;
+  S.steps = steps;
 
-  // Load progress (skip for free preview users)
-  if (!state.freeOnly) {
-    const { data: prog } = await sb.from('lesson_progress').select('*')
-      .eq('enrollment_id', enrollment.id);
-    prog?.forEach(p => { if (p.completed) state.progress[p.lesson_id] = true; });
+  // 9. Load progress (enrolled only)
+  if (!S.freeOnly && enrollment) {
+    const { data: prog } = await sb.from('lesson_progress')
+      .select('*').eq('enrollment_id', enrollment.id);
+    (prog || []).forEach(p => { if (p.completed) S.progress[p.lesson_id] = true; });
 
-    const { data: attempts } = await sb.from('quiz_attempts').select('*')
-      .eq('enrollment_id', enrollment.id);
-    attempts?.forEach(a => { state.quizAttempts[a.quiz_id] = { score: a.score, passed: a.passed }; });
+    const { data: att } = await sb.from('quiz_attempts')
+      .select('*').eq('enrollment_id', enrollment.id);
+    (att || []).forEach(a => { S.attempts[a.quiz_id] = { score: a.score, passed: a.passed }; });
   }
 
-  // Find first incomplete step
-  let startIndex = 0;
-  for (let i = 0; i < flat.length; i++) {
-    const step = flat[i];
-    if (step._type === 'lesson' && state.progress[step.id]) continue;
-    if (step._type === 'quiz' && state.quizAttempts[step.quiz?.id]?.passed) continue;
-    startIndex = i;
+  // 10. Find start index
+  S.idx = 0;
+  for (let i = 0; i < steps.length; i++) {
+    const s = steps[i];
+    if (s.type === 'lesson' && S.progress[s.data.id]) continue;
+    if (s.type === 'quiz' && S.attempts[s.data.id]?.passed) continue;
+    S.idx = i;
     break;
   }
-  // Check if fully complete (only for enrolled users)
-  if (!state.freeOnly) {
-    const allLessonsDone = flat.filter(f => f._type === 'lesson').every(l => state.progress[l.id]);
-    const allQuizzesDone = Object.values(state.quizAttempts).filter(a => a.passed).length === Object.keys(state.quizzes).length;
-    if (allLessonsDone && allQuizzesDone) startIndex = flat.length;
+
+  document.getElementById('status').style.display = 'none';
+  render();
+}
+
+// ── Render ─────────────────────────────────────────────────
+function render() {
+  buildStepper();
+  updateProgressBar();
+
+  const step = S.steps[S.idx];
+  const nav = document.getElementById('bottom-nav');
+  const btnPrev = document.getElementById('btn-prev');
+  const btnNext = document.getElementById('btn-next');
+  const pos = document.getElementById('lesson-position');
+
+  // All done?
+  if (!S.freeOnly) {
+    const allL = S.steps.filter(s => s.type === 'lesson').every(s => S.progress[s.data.id]);
+    const allQ = S.steps.filter(s => s.type === 'quiz').every(s => S.attempts[s.data.id]?.passed);
+    if (allL && allQ) { renderCompletion(); nav.style.display = 'none'; return; }
   }
 
-  state.currentIndex = Math.min(startIndex, flat.length - 1);
-  dbg('rendering step ' + state.currentIndex + ' of ' + flat.length);
-  buildStepper();
-  renderCurrent();
+  nav.style.display = 'flex';
+  btnPrev.style.display = S.idx === 0 ? 'none' : 'flex';
+  pos.textContent = (S.idx + 1) + ' of ' + S.steps.length;
+
+  if (step.type === 'lesson') {
+    renderLesson(step);
+    const done = S.progress[step.data.id];
+    btnNext.textContent = done ? 'Next →' : 'Mark complete & continue →';
+    btnNext.className = 'btn ' + (done ? 'btn-secondary' : 'btn-primary');
+    btnNext.style.display = 'flex';
+  } else {
+    renderQuiz(step);
+    const att = S.attempts[step.data.id];
+    btnNext.style.display = att?.passed ? 'flex' : 'none';
+    if (att?.passed) { btnNext.textContent = 'Continue →'; btnNext.className = 'btn btn-primary'; }
+  }
 }
 
 function buildStepper() {
-  const stepper = document.getElementById('stepper');
-  stepper.innerHTML = state.modules.map((mod, i) => {
-    const modLessons = state.lessons.filter(l => l._module?.id === mod.id && l._type === 'lesson');
-    const allDone = modLessons.every(l => state.progress[l.id]);
-    const isActive = state.lessons[state.currentIndex]?._module?.id === mod.id;
-    return `<div class="step ${allDone ? 'completed' : isActive ? 'active' : ''}">
-      <span class="step-num">${allDone ? '✓' : i + 1}</span>
-      ${mod.title}
+  document.getElementById('stepper').innerHTML = S.modules.map((mod, i) => {
+    const modLessons = S.steps.filter(s => s.type === 'lesson' && s.module.id === mod.id);
+    const done = modLessons.every(s => S.progress[s.data.id]);
+    const active = S.steps[S.idx]?.module?.id === mod.id;
+    return `<div class="step ${done ? 'completed' : active ? 'active' : ''}">
+      <span class="step-num">${done ? '✓' : i + 1}</span>${mod.title}
     </div>`;
   }).join('');
 }
 
-function updateProgress() {
-  const lessonsDone = Object.keys(state.progress).length;
-  const totalLessons = state.lessons.filter(l => l._type === 'lesson').length;
-  const pct = totalLessons > 0 ? Math.round((lessonsDone / totalLessons) * 100) : 0;
+function updateProgressBar() {
+  const total = S.steps.filter(s => s.type === 'lesson').length;
+  const done = Object.keys(S.progress).length;
+  const pct = total ? Math.round((done / total) * 100) : 0;
   document.getElementById('nav-progress-fill').style.width = pct + '%';
   document.getElementById('nav-progress-label').textContent = pct + '%';
 }
 
-function renderCurrent() {
-  updateProgress();
-  buildStepper();
-
-  const step = state.lessons[state.currentIndex];
-  const bottomNav = document.getElementById('bottom-nav');
-  const btnPrev = document.getElementById('btn-prev');
-  const btnNext = document.getElementById('btn-next');
-  const lessonPos = document.getElementById('lesson-position');
-
-  // Check if all done (never show completion for free preview users)
-  if (!state.freeOnly) {
-    const allLessonsDone = state.lessons.filter(l => l._type === 'lesson').every(l => state.progress[l.id]);
-    const allQuizzesPassed = Object.values(state.quizAttempts).filter(a => a.passed).length ===
-      Object.keys(state.quizzes).length;
-
-    if (allLessonsDone && allQuizzesPassed) {
-      renderCompletion();
-      bottomNav.style.display = 'none';
-      return;
-    }
-  }
-
-  bottomNav.style.display = 'flex';
-  btnPrev.style.display = state.currentIndex === 0 ? 'none' : 'flex';
-  lessonPos.textContent = (state.currentIndex + 1) + ' of ' + state.totalSteps;
-
-  if (step._type === 'lesson') {
-    renderLesson(step);
-    const isDone = state.progress[step.id];
-    btnNext.textContent = isDone
-      ? (state.currentIndex === state.totalSteps - 1 ? 'Finish' : 'Next →')
-      : 'Mark complete & continue →';
-    btnNext.className = 'btn ' + (isDone ? 'btn-secondary' : 'btn-primary');
-  } else {
-    renderQuiz(step);
-    const attempt = state.quizAttempts[step.quiz.id];
-    if (attempt?.passed) {
-      btnNext.textContent = 'Continue →';
-      btnNext.className = 'btn btn-primary';
-    } else {
-      btnNext.style.display = 'none';
-    }
-  }
-}
-
-function renderLesson(lesson) {
-  const activityLines = lesson.content ? lesson.content.split('. ') : [];
-  const mainText = activityLines.slice(0, -1).join('. ');
-  const actionLine = activityLines[activityLines.length - 1] || '';
+function renderLesson(step) {
+  const l = step.data;
+  const mod = step.module;
+  const sentences = (l.content || '').split('. ');
+  const action = sentences[sentences.length - 1] || l.content || '';
 
   document.getElementById('main-content').innerHTML = `
-    <div class="module-label">Module ${lesson._module.sort_order} · ${lesson._module.title}</div>
-    <div class="lesson-header">
-      <div class="lesson-title">${lesson.title}</div>
-      <div class="lesson-meta">Lesson ${lesson.sort_order} · ${lesson._module.title}</div>
-    </div>
-    ${lesson.youtube_url ? `
-      <div class="video-wrap">
-        <iframe src="${getYouTubeEmbed(lesson.youtube_url)}"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen></iframe>
-      </div>` : `
-      <div class="video-wrap">
-        <div class="video-placeholder">
-          <div class="video-placeholder-icon">🎬</div>
-          <div>Video coming soon</div>
-          <div style="font-size:12px; margin-top:4px;">Add a YouTube URL to this lesson to display it here</div>
-        </div>
-      </div>`}
-    ${lesson.content ? `
-      <div class="lesson-content">
-        <p>${lesson.content}</p>
-      </div>` : ''}
+    <div class="module-label">Module ${mod.sort_order} · ${mod.title}</div>
+    <div class="lesson-title">${l.title}</div>
+    <div class="lesson-meta">Lesson ${l.sort_order} · ${mod.title}</div>
+    ${l.youtube_url
+      ? `<div class="video-wrap"><iframe src="${ytEmbed(l.youtube_url)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`
+      : `<div class="video-wrap"><div class="video-placeholder"><div style="font-size:48px">🎬</div><div>Video coming soon</div></div></div>`}
+    ${l.content ? `<div class="lesson-content"><p>${l.content}</p></div>` : ''}
     <div class="activity-box">
       <div class="activity-eyebrow">✦ Your action for this lesson</div>
       <div class="activity-title">Try it now</div>
-      <div class="activity-body">${actionLine || lesson.content || 'Complete the activity described above.'}</div>
-    </div>
-  `;
+      <div class="activity-body">${action}</div>
+    </div>`;
 }
 
 function renderQuiz(step) {
-  const quiz = step.quiz;
-  const attempt = state.quizAttempts[quiz.id];
-  const questions = quiz.quiz_questions || [];
+  const quiz = step.data;
+  const att = S.attempts[quiz.id];
+  const qs = (quiz.quiz_questions || []).sort((a, b) => a.sort_order - b.sort_order);
 
-  let questionsHtml = questions.map((q, qi) => {
+  const qHtml = qs.map((q, qi) => {
     const letters = ['A','B','C','D'];
-    const options = (q.quiz_options || []).sort((a,b) => a.sort_order - b.sort_order);
-    return `
-      <div class="question-block" id="q-block-${q.id}">
-        <div class="question-num">Question ${qi + 1} of ${questions.length}</div>
-        <div class="question-text">${q.question}</div>
-        ${options.map((opt, oi) => `
-          <button class="option" id="opt-${opt.id}"
-            onclick="selectOption('${q.id}', '${opt.id}', ${opt.is_correct})"
-            ${attempt ? 'disabled' : ''}>
-            <span class="option-letter">${letters[oi]}</span>
-            ${opt.option_text}
-          </button>`).join('')}
-      </div>`;
+    const opts = (q.quiz_options || []).sort((a, b) => a.sort_order - b.sort_order);
+    return `<div class="question-block" id="qb-${q.id}">
+      <div class="question-num">Question ${qi + 1} of ${qs.length}</div>
+      <div class="question-text">${q.question}</div>
+      ${opts.map((o, oi) => `<button class="option" id="o-${o.id}"
+        onclick="pick('${q.id}','${o.id}',${o.is_correct})" ${att ? 'disabled' : ''}>
+        <span class="option-letter">${letters[oi]}</span>${o.option_text}
+      </button>`).join('')}
+    </div>`;
   }).join('');
 
   document.getElementById('main-content').innerHTML = `
     <div class="quiz-wrap">
-      <div class="quiz-eyebrow">Module ${step._module.sort_order} Quiz</div>
-      <div class="quiz-title">${step._module.title}</div>
-      <div class="quiz-sub">Answer each question to complete this module. You need 70% to pass.</div>
-      <div id="quiz-questions">${questionsHtml}</div>
-      <div id="quiz-result"></div>
-      ${!attempt ? `<button class="btn btn-primary" id="submit-quiz" onclick="submitQuiz('${quiz.id}')"
-        style="width:100%; margin-top:1rem; justify-content:center; display:none;">
-        Submit answers
-      </button>` : ''}
-    </div>
-  `;
+      <div class="quiz-eyebrow">Module ${step.module.sort_order} Quiz</div>
+      <div class="quiz-title">${step.module.title}</div>
+      <div class="quiz-sub">Answer each question. You need 70% to pass.</div>
+      <div id="q-area">${qHtml}</div>
+      <div id="q-result"></div>
+      ${!att ? `<button class="btn btn-primary" id="submit-btn" onclick="submitQuiz('${quiz.id}')"
+        style="width:100%;margin-top:1rem;justify-content:center;display:none;">
+        Submit answers</button>` : ''}
+    </div>`;
 
-  if (attempt) {
-    showQuizResult(attempt.score, attempt.passed);
-    document.getElementById('btn-next').style.display = 'flex';
-  }
+  if (att) showResult(att.score, att.passed);
 }
 
-let quizAnswers = {};
+function pick(qId, oId, correct) {
+  quizAnswers[qId] = { oId, correct };
+  document.getElementById('qb-' + qId).querySelectorAll('.option')
+    .forEach(o => o.classList.remove('selected'));
+  document.getElementById('o-' + oId).classList.add('selected');
 
-function selectOption(questionId, optionId, isCorrect) {
-  if (!quizAnswers) quizAnswers = {};
-  quizAnswers[questionId] = { optionId, isCorrect };
-
-  // Highlight selected, clear others in this question
-  const block = document.getElementById('q-block-' + questionId);
-  block.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
-  document.getElementById('opt-' + optionId).classList.add('selected');
-
-  // Check if all answered
-  const totalQ = state.lessons[state.currentIndex]?.quiz?.quiz_questions?.length || 0;
-  const answered = Object.keys(quizAnswers).length;
-  const submitBtn = document.getElementById('submit-quiz');
-  if (submitBtn && answered >= totalQ) submitBtn.style.display = 'flex';
+  const step = S.steps[S.idx];
+  const total = (step.data.quiz_questions || []).length;
+  const sub = document.getElementById('submit-btn');
+  if (sub && Object.keys(quizAnswers).length >= total) sub.style.display = 'flex';
 }
 
 async function submitQuiz(quizId) {
-  const quiz = state.lessons[state.currentIndex].quiz;
-  const questions = quiz.quiz_questions || [];
+  const step = S.steps[S.idx];
+  const qs = step.data.quiz_questions || [];
   let correct = 0;
+  qs.forEach(q => { if (quizAnswers[q.id]?.correct) correct++; });
+  const score = Math.round((correct / qs.length) * 100);
+  const passed = score >= (step.data.passing_score || 70);
 
-  questions.forEach(q => {
-    const answer = quizAnswers[q.id];
+  // Style options
+  qs.forEach(q => {
     const opts = q.quiz_options || [];
-    const correctOpt = opts.find(o => o.is_correct);
-    const selectedOpt = answer?.optionId;
-
-    if (answer?.isCorrect) correct++;
-
-    // Style all options
-    opts.forEach(opt => {
-      const el = document.getElementById('opt-' + opt.id);
+    opts.forEach(o => {
+      const el = document.getElementById('o-' + o.id);
       if (!el) return;
       el.disabled = true;
-      if (opt.is_correct) el.classList.add('correct');
-      else if (opt.id === selectedOpt && !opt.is_correct) el.classList.add('incorrect');
+      if (o.is_correct) el.classList.add('correct');
+      else if (o.id === quizAnswers[q.id]?.oId) el.classList.add('incorrect');
     });
   });
 
-  const score = Math.round((correct / questions.length) * 100);
-  const passed = score >= (quiz.passing_score || 70);
-
-  // Save attempt (skip for free preview users)
-  if (!state.freeOnly) {
+  // Save to DB (enrolled only)
+  if (!S.freeOnly && S.enrollment) {
     await sb.from('quiz_attempts').insert({
-      enrollment_id: state.enrollment.id,
-      quiz_id: quizId,
-      score: score,
-      passed: passed
+      enrollment_id: S.enrollment.id, quiz_id: quizId, score, passed
     });
   }
 
-  state.quizAttempts[quizId] = { score, passed };
+  S.attempts[quizId] = { score, passed };
   quizAnswers = {};
-
-  const submitBtn = document.getElementById('submit-quiz');
-  if (submitBtn) submitBtn.style.display = 'none';
-
-  showQuizResult(score, passed);
+  const sub = document.getElementById('submit-btn');
+  if (sub) sub.style.display = 'none';
+  showResult(score, passed);
 
   if (passed) {
-    document.getElementById('btn-next').style.display = 'flex';
-    document.getElementById('btn-next').textContent = 'Continue →';
-    document.getElementById('btn-next').className = 'btn btn-primary';
+    const btn = document.getElementById('btn-next');
+    btn.style.display = 'flex';
+    btn.textContent = 'Continue →';
+    btn.className = 'btn btn-primary';
   }
 }
 
-function showQuizResult(score, passed) {
-  const el = document.getElementById('quiz-result');
+function showResult(score, passed) {
+  const el = document.getElementById('q-result');
   if (!el) return;
-  el.innerHTML = `
-    <div class="quiz-result ${passed ? 'pass' : 'fail'}">
-      <div class="quiz-result-score">${score}%</div>
-      <div class="quiz-result-msg">${passed
-        ? '🎉 Great work — you passed! Move on to the next module.'
-        : '📚 Not quite. Review the material and try again.'}</div>
-      ${!passed ? `<button class="btn btn-secondary" onclick="retryQuiz()"
-        style="margin-top:1rem; display:inline-flex;">Try again</button>` : ''}
-    </div>
-  `;
+  el.innerHTML = `<div class="quiz-result ${passed ? 'pass' : 'fail'}">
+    <div class="quiz-result-score">${score}%</div>
+    <div class="quiz-result-msg">${passed
+      ? '🎉 Great work — you passed!'
+      : '📚 Not quite — review the lesson and try again.'}</div>
+    ${!passed ? `<button class="btn btn-secondary" onclick="retryQuiz()" style="margin-top:1rem;display:inline-flex;">Try again</button>` : ''}
+  </div>`;
 }
 
-function retryQuiz() {
-  quizAnswers = {};
-  renderCurrent();
-}
+function retryQuiz() { quizAnswers = {}; render(); }
 
 async function goNext() {
-  const step = state.lessons[state.currentIndex];
-  const nextIndex = state.currentIndex + 1;
+  const step = S.steps[S.idx];
+  const nextIdx = S.idx + 1;
 
-  // Check if free-only user is trying to go past Module 1
-  if (state.freeOnly && nextIndex < state.totalSteps) {
-    const nextStep = state.lessons[nextIndex];
-    if (nextStep && nextStep._module && nextStep._module.sort_order > 1) {
-      renderPaywall();
-      return;
-    }
+  // Paywall for free users trying to pass Module 1
+  if (S.freeOnly && nextIdx < S.steps.length) {
+    const next = S.steps[nextIdx];
+    if (next.module.sort_order > 1) { renderPaywall(); return; }
   }
 
-  // Mark lesson complete if not already (skip for free preview)
-  if (step._type === 'lesson' && !state.progress[step.id] && !state.freeOnly) {
+  // Mark lesson complete
+  if (step.type === 'lesson' && !S.progress[step.data.id] && !S.freeOnly && S.enrollment) {
     await sb.from('lesson_progress').upsert({
-      enrollment_id: state.enrollment.id,
-      lesson_id: step.id,
+      enrollment_id: S.enrollment.id,
+      lesson_id: step.data.id,
       completed: true,
       completed_at: new Date().toISOString()
     }, { onConflict: 'enrollment_id,lesson_id' });
-    state.progress[step.id] = true;
+    S.progress[step.data.id] = true;
   }
 
-  if (state.currentIndex < state.totalSteps - 1) {
-    state.currentIndex++;
-    renderCurrent();
+  if (nextIdx < S.steps.length) {
+    S.idx = nextIdx;
+    render();
     window.scrollTo(0, 0);
   } else {
-    renderCurrent();
+    render();
   }
+}
+
+function go(dir) {
+  const ni = S.idx + dir;
+  if (ni >= 0 && ni < S.steps.length) { S.idx = ni; quizAnswers = {}; render(); window.scrollTo(0,0); }
 }
 
 function renderPaywall() {
-  const courseName = state.course.title;
-  const courseSlug = state.course.slug;
-  const price = courseSlug === 'ai-unlocked' ? '$97' : '$197';
-
+  const slug = S.course.slug;
+  const price = slug === 'ai-unlocked' ? '$97' : '$197';
   document.getElementById('bottom-nav').style.display = 'none';
   document.getElementById('stepper').innerHTML = '';
-  document.getElementById('main-content').innerHTML = \`
-    <div style="background:var(--navy); border-radius:20px; padding:3rem 2rem; text-align:center; position:relative; overflow:hidden;">
-      <div style="position:absolute; top:-60px; right:-60px; width:200px; height:200px; border-radius:50%; background:var(--amber); opacity:0.12;"></div>
-      <div style="font-size:48px; margin-bottom:1rem;">🔓</div>
-      <div style="font-family:'Fraunces',serif; font-size:28px; font-weight:600; color:white; margin-bottom:0.75rem;">
-        Ready to unlock the full course?
+  document.getElementById('main-content').innerHTML = `
+    <div style="background:var(--navy);border-radius:20px;padding:3rem 2rem;text-align:center;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:var(--amber);opacity:0.12;"></div>
+      <div style="font-size:48px;margin-bottom:1rem;">🔓</div>
+      <div style="font-family:'Fraunces',serif;font-size:28px;font-weight:600;color:white;margin-bottom:0.75rem;">Ready to unlock the full course?</div>
+      <div style="font-size:15px;color:rgba(255,255,255,0.65);max-width:420px;margin:0 auto 2rem;line-height:1.6;">
+        You've completed Module 1 for free. Enroll now to access all ${slug === 'ai-unlocked' ? '7 modules, 25 lessons' : '9 modules, 29 lessons'}, quizzes, and your certificate.
       </div>
-      <div style="font-size:15px; color:rgba(255,255,255,0.65); max-width:420px; margin:0 auto 2rem; line-height:1.6;">
-        You've completed Module 1 for free. Enroll now to access all
-        \${courseSlug === 'ai-unlocked' ? '7 modules, 25 lessons' : '9 modules, 29 lessons'},
-        quizzes, and your certificate of completion.
-      </div>
-      <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
-        <a href="/enroll.html?course=\${courseSlug}"
-          style="padding:14px 32px; background:var(--amber); color:white; border-radius:10px; font-size:15px; font-weight:700; text-decoration:none;">
-          Enroll now — \${price}
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <a href="/enroll.html?course=${slug}" style="padding:14px 32px;background:var(--amber);color:white;border-radius:10px;font-size:15px;font-weight:700;text-decoration:none;">
+          Enroll now — ${price}
         </a>
-        <a href="/dashboard.html"
-          style="padding:14px 28px; background:transparent; color:white; border:1.5px solid rgba(255,255,255,0.3); border-radius:10px; font-size:15px; font-weight:700; text-decoration:none;">
+        <a href="/dashboard.html" style="padding:14px 28px;background:transparent;color:white;border:1.5px solid rgba(255,255,255,0.3);border-radius:10px;font-size:15px;font-weight:700;text-decoration:none;">
           Back to dashboard
         </a>
       </div>
-      <div style="font-size:12px; color:rgba(255,255,255,0.4); margin-top:1.5rem;">
-        Lifetime access · Certificate included · No subscription
-      </div>
-    </div>
-  \`;
-}
-
-function goLesson(dir) {
-  const newIndex = state.currentIndex + dir;
-  if (newIndex >= 0 && newIndex < state.totalSteps) {
-    state.currentIndex = newIndex;
-    quizAnswers = {};
-    renderCurrent();
-    window.scrollTo(0, 0);
-  }
+    </div>`;
 }
 
 function renderCompletion() {
-  const firstName = state.learner?.full_name?.split(' ')[0] || 'there';
+  const name = S.learner?.full_name?.split(' ')[0] || 'there';
   document.getElementById('main-content').innerHTML = `
     <div class="completion-card">
       <div class="completion-blob"></div>
       <div class="completion-icon">🎓</div>
-      <div class="completion-title">You did it, <em>${firstName}!</em></div>
-      <div class="completion-sub">
-        You've completed every lesson and quiz in ${state.course.title}.
-        Your certificate of completion is ready.
-      </div>
-      <a href="/dashboard.html" class="btn btn-success" style="display:inline-flex; margin-right:12px;">
-        ← Back to dashboard
-      </a>
-    </div>
-  `;
+      <div class="completion-title">You did it, <em>${name}!</em></div>
+      <div class="completion-sub">You've completed every lesson and quiz in ${S.course.title}. Your certificate is ready.</div>
+      <a href="/dashboard.html" class="btn" style="background:var(--teal);color:white;display:inline-flex;">← Back to dashboard</a>
+    </div>`;
   document.getElementById('stepper').innerHTML = '';
 }
 
-function getYouTubeEmbed(url) {
-  if (!url) return '';
-  const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([\w-]+)/);
-  return match ? 'https://www.youtube.com/embed/' + match[1] : url;
+function ytEmbed(url) {
+  const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([\w-]+)/);
+  return m ? 'https://www.youtube.com/embed/' + m[1] : url;
 }
 
-init();
+boot().catch(err => showError('Unexpected error: ' + err.message));
 </script>
 </body>
 </html>
