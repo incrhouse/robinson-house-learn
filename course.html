@@ -387,10 +387,18 @@ let state = {
 const params = new URLSearchParams(window.location.search);
 const courseId = params.get('id');
 
+function dbg(msg) {
+  console.log('[course]', msg);
+  const el = document.getElementById('debug-log');
+  if (el) { el.style.display = 'block'; el.innerHTML += msg + '<br>'; }
+}
+
 async function init() {
+  dbg('init started, courseId=' + courseId);
   if (!courseId) { window.location.href = '/dashboard.html'; return; }
 
-  const { data: { session } } = await sb.auth.getSession();
+  const { data: { session }, error: sessErr } = await sb.auth.getSession();
+  dbg('session check: ' + (session ? 'found' : 'none') + (sessErr ? ' err:' + sessErr.message : ''));
   if (!session) { window.location.href = '/login.html'; return; }
   state.session = session;
 
@@ -418,14 +426,17 @@ async function init() {
   document.title = course.title + ' — Robinson House Learn';
   document.getElementById('nav-course-title').textContent = course.title;
 
-  const { data: modules } = await sb.from('modules').select('*')
+  const { data: modules, error: modErr } = await sb.from('modules').select('*')
     .eq('course_id', courseId).order('sort_order');
+  dbg('modules: ' + (modules ? modules.length : 0) + (modErr ? ' err:'+modErr.message : ''));
   state.modules = modules;
 
   // Fetch lessons via module IDs (avoids RLS join issue for unenrolled users)
   const moduleIds = modules.map(m => m.id);
-  const { data: allLessons } = await sb.from('lessons').select('*, module_id')
+  dbg('fetching lessons for moduleIds: ' + moduleIds.length);
+  const { data: allLessons, error: lessonErr } = await sb.from('lessons').select('*, module_id')
     .in('module_id', moduleIds).order('sort_order');
+  dbg('lessons: ' + (allLessons ? allLessons.length : 0) + (lessonErr ? ' err:'+lessonErr.message : ''));
   // Attach module info manually
   const moduleMap = {};
   modules.forEach(m => { moduleMap[m.id] = m; });
@@ -475,6 +486,7 @@ async function init() {
   }
 
   state.currentIndex = Math.min(startIndex, flat.length - 1);
+  dbg('rendering step ' + state.currentIndex + ' of ' + flat.length);
   buildStepper();
   renderCurrent();
 }
