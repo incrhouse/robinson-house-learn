@@ -476,13 +476,15 @@ async function init() {
   for (let i = 0; i < flat.length; i++) {
     const step = flat[i];
     if (step._type === 'lesson' && state.progress[step.id]) continue;
-    if (step._type === 'quiz' && state.quizAttempts[step.quiz.id]?.passed) continue;
+    if (step._type === 'quiz' && state.quizAttempts[step.quiz?.id]?.passed) continue;
     startIndex = i;
     break;
   }
-  if (prog?.length === flat.filter(f => f._type === 'lesson').length &&
-      attempts?.filter(a => a.passed).length === Object.keys(state.quizzes).length) {
-    startIndex = flat.length; // all done
+  // Check if fully complete (only for enrolled users)
+  if (!state.freeOnly) {
+    const allLessonsDone = flat.filter(f => f._type === 'lesson').every(l => state.progress[l.id]);
+    const allQuizzesDone = Object.values(state.quizAttempts).filter(a => a.passed).length === Object.keys(state.quizzes).length;
+    if (allLessonsDone && allQuizzesDone) startIndex = flat.length;
   }
 
   state.currentIndex = Math.min(startIndex, flat.length - 1);
