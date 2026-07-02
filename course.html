@@ -422,8 +422,14 @@ async function init() {
     .eq('course_id', courseId).order('sort_order');
   state.modules = modules;
 
-  const { data: allLessons } = await sb.from('lessons').select('*, modules!inner(id,title,sort_order,course_id)')
-    .eq('modules.course_id', courseId).order('sort_order');
+  // Fetch lessons via module IDs (avoids RLS join issue for unenrolled users)
+  const moduleIds = modules.map(m => m.id);
+  const { data: allLessons } = await sb.from('lessons').select('*, module_id')
+    .in('module_id', moduleIds).order('sort_order');
+  // Attach module info manually
+  const moduleMap = {};
+  modules.forEach(m => { moduleMap[m.id] = m; });
+  allLessons?.forEach(l => { l.modules = moduleMap[l.module_id]; });
 
   const { data: quizList } = await sb.from('quizzes').select('*, quiz_questions(*, quiz_options(*))')
     .in('module_id', modules.map(m => m.id));
