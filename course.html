@@ -475,13 +475,21 @@ function renderPaywall() {
 
 function renderCompletion() {
   const name = S.learner?.full_name?.split(' ')[0] || 'there';
+  const certUrl = '/certificate.html?enrollment=' + S.enrollment.id + '&course=' + S.course.id;
   document.getElementById('main-content').innerHTML = `
     <div class="completion-card">
       <div class="completion-blob"></div>
       <div class="completion-icon">🎓</div>
       <div class="completion-title">You did it, <em>${name}!</em></div>
-      <div class="completion-sub">You've completed every lesson and quiz in ${S.course.title}. Your certificate is ready.</div>
-      <a href="/dashboard.html" class="btn" style="background:var(--teal);color:white;display:inline-flex;">← Back to dashboard</a>
+      <div class="completion-sub">You've completed every lesson and quiz in ${S.course.title}. Your certificate of completion is ready to download and share.</div>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <a href="${certUrl}" class="btn" style="background:var(--amber);color:white;display:inline-flex;padding:14px 28px;font-size:15px;">
+          🎓 Get my certificate
+        </a>
+        <a href="/dashboard.html" class="btn" style="background:transparent;color:white;border:1.5px solid rgba(255,255,255,0.3);display:inline-flex;padding:14px 28px;font-size:15px;">
+          ← Back to dashboard
+        </a>
+      </div>
     </div>`;
   document.getElementById('stepper').innerHTML = '';
 }
