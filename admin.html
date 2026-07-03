@@ -370,7 +370,7 @@ const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 const sb = supabase.createClient(SB_URL, SB_KEY);
 
 // ADMIN EMAIL — only this email can access admin
-const ADMIN_EMAIL = 'cleveland@incrhouse.com';
+const ADMIN_EMAILS = ['cleveland@incrhouse.com', 'cleverobinson83+test2@gmail.com'];
 
 let courses = [];
 let cohorts = [];
@@ -379,7 +379,7 @@ let cohorts = [];
 async function boot() {
   const { data: { session } } = await sb.auth.getSession();
   if (!session) { location.href = '/login.html'; return; }
-  if (session.user.email !== ADMIN_EMAIL) {
+  if (!ADMIN_EMAILS.includes(session.user.email)) {
     document.body.innerHTML = '<div style="text-align:center;padding:4rem;font-family:sans-serif;"><h2>Access denied</h2><p>This page is for administrators only.</p><a href="/dashboard.html">← Back to dashboard</a></div>';
     return;
   }
